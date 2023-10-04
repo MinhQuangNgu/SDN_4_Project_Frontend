@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import './style.scss'
-import {  useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import OwnRecipeCard from '../card/OwnRecipeCard';
 import RecipeCard from '../card/RecipeCard';
 const Profile = () => {
@@ -142,13 +142,13 @@ const Profile = () => {
                                 </div> :
                                     type === "love" ? <div className='row'>
                                         <div style={{ marginBottom: "20px" }} class="col-xl-4 col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                                            <RecipeCard imageHeight={200}/>
+                                            <RecipeCard imageHeight={200} />
                                         </div>
                                         <div style={{ marginBottom: "20px" }} class="col-xl-4 col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                                            <RecipeCard imageHeight={200}/>
+                                            <RecipeCard imageHeight={200} />
                                         </div>
                                         <div style={{ marginBottom: "20px" }} class="col-xl-4 col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                                            <RecipeCard imageHeight={200}/>
+                                            <RecipeCard imageHeight={200} />
                                         </div>
                                     </div> : <div className='row'>
                                         <div style={{ marginBottom: "20px" }} class="col-xl-6 col-lg-6 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
