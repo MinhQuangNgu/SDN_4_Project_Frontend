@@ -1,7 +1,42 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import './style.scss';
 import { Link } from 'react-router-dom'
+import axios from 'axios'
+import Swal from 'sweetalert2';
 const Login = () => {
+  const inputEmail = useRef();
+  const inputPass = useRef();
+  const loginAccount = async () => {
+    const email = inputEmail.current.value;
+    const pass = inputPass.current.value;
+    const body = {
+      email: email,
+      password: pass
+    }
+    const user = await axios.post(`http://localhost:5000/user/token`, body);
+
+    const { statusCode, success, data, token } = user.data.data;
+    if (success == true) {
+      Swal.fire({
+        position: 'top-end',
+        icon: 'success',
+        title: 'Login Success',
+        showConfirmButton: false,
+        timer: 1500
+      })
+      localStorage.setItem("token", token)
+    }
+    else if (success == false) {
+      Swal.fire({
+        position: 'top-end',
+        icon: 'error',
+        title: data,
+        showConfirmButton: false,
+        timer: 1500
+      })
+    }
+
+  }
   return (
     <>
       <div className="limiter">
@@ -15,20 +50,20 @@ const Login = () => {
                 Đăng nhập
               </span>
               <div className="wrap-input100 validate-input" data-validate="Valid email is required: ex@abc.xyz">
-                <input className="input100 input_custom_auth" type="text" name="email" placeholder="Email" />
+                <input className="input100 input_custom_auth" type="text" name="email" placeholder="Email" ref={inputEmail} />
                 <span className="focus-input100"></span>
                 <span className="symbol-input100">
                   <i className="fa fa-envelope" aria-hidden="true"></i>
                 </span>
               </div>
               <div style={{ marginTop: "15px" }} className="wrap-input100 validate-input alert-validate" data-validate="Mật khẩu không được trống">
-                <input className="input100 input_custom_auth" type="password" name="pass" placeholder="Mật khẩu" />
+                <input className="input100 input_custom_auth" type="password" name="pass" placeholder="Mật khẩu" ref={inputPass} />
                 <span className="focus-input100"></span>
                 <span className="symbol-input100">
                   <i className="fa fa-lock" aria-hidden="true"></i>
                 </span>
               </div>
-              <div className="container-login100-form-btn">
+              <div className="container-login100-form-btn" onClick={loginAccount}>
                 <button className="login100-form-btn custom_btn_auth">
                   Đăng nhập
                 </button>

@@ -1,7 +1,64 @@
-import React from 'react'
+import React, { useRef, useState } from 'react'
 import './style.scss'
 import { Link } from 'react-router-dom'
+
+import Swal from 'sweetalert2'
+import axios from 'axios'
 const Register = () => {
+    const inputNameUp = useRef();
+    const inputPassUp = useRef();
+    const inputEmail = useRef();
+    const inputRepass = useRef();
+
+    const [ePass, setEpass] = useState('');
+    const registerAccount = async () => {
+        const username = inputNameUp.current.value;
+        const password = inputPassUp.current.value;
+        const email = inputEmail.current.value;
+        const rePass = inputRepass.current.value;
+
+        if (rePass !== password) {
+
+            Swal.fire({
+                position: 'top-end',
+                icon: 'error',
+                title: "Nhập lại Mật khẩu không trùng",
+                showConfirmButton: false,
+                timer: 1500
+            })
+            return;
+        }
+
+        const body = {
+            name: username,
+            email: email,
+            password: password,
+            role: "user",
+
+        }
+
+        let res = await axios.post(`http://localhost:5000/user`, body);
+        const {statusCode,success,data,token} = res.data.data
+        if(success == true){
+            Swal.fire({
+                position: 'top-end',
+                icon: 'success',
+                title: 'Register Success',
+                showConfirmButton: false,
+                timer: 1500
+              })
+              localStorage.setItem("token", token)
+        }
+       else if(success == false){
+            Swal.fire({
+                position: 'top-end',
+                icon: 'error',
+                title: data,
+                showConfirmButton: false,
+                timer: 1500
+              })
+        }
+    }
     return (
         <>
             <div className="limiter">
@@ -15,35 +72,36 @@ const Register = () => {
                                 Đăng ký
                             </span>
                             <div className="wrap-input100 validate-input" data-validate="Valid email is required: ex@abc.xyz">
-                                <input className="input100 input_custom_auth" type="text" name="name" placeholder="Tên hiển thị" />
+                                <input className="input100 input_custom_auth" type="text" name="name" placeholder="Tên hiển thị" ref={inputNameUp} />
                                 <span className="focus-input100"></span>
                                 <span className="symbol-input100">
                                     <i className="fa fa-user" aria-hidden="true"></i>
                                 </span>
                             </div>
                             <div style={{ marginTop: "15px" }} className="wrap-input100 validate-input" data-validate="Valid email is required: ex@abc.xyz">
-                                <input className="input100 input_custom_auth" type="text" name="email" placeholder="Email" />
+                                <input className="input100 input_custom_auth" type="text" name="email" placeholder="Email" ref={inputEmail} />
                                 <span className="focus-input100"></span>
                                 <span className="symbol-input100">
                                     <i className="fa fa-envelope" aria-hidden="true"></i>
                                 </span>
                             </div>
                             <div style={{ marginTop: "15px" }} className="wrap-input100 validate-input alert-validate" data-validate="Mật khẩu không được trống">
-                                <input className="input100 input_custom_auth" type="password" name="pass" placeholder="Mật khẩu" />
+                                <input className="input100 input_custom_auth" type="password" name="pass" placeholder="Mật khẩu" ref={inputPassUp} />
                                 <span className="focus-input100"></span>
                                 <span className="symbol-input100">
                                     <i className="fa fa-lock" aria-hidden="true"></i>
                                 </span>
                             </div>
                             <div style={{ marginTop: "15px" }} className="wrap-input100 validate-input alert-validate" data-validate="Mật khẩu không được trống">
-                                <input className="input100 input_custom_auth" type="password" name="pass" placeholder="Nhập lại mật khẩu" />
+                                <input className="input100 input_custom_auth" type="password" name="pass" placeholder="Nhập lại mật khẩu" ref={inputRepass} />
                                 <span className="focus-input100"></span>
                                 <span className="symbol-input100">
                                     <i className="fa fa-lock" aria-hidden="true"></i>
                                 </span>
+
                             </div>
                             <div className="container-login100-form-btn">
-                                <button className="login100-form-btn custom_btn_auth">
+                                <button className="login100-form-btn custom_btn_auth" onClick={registerAccount}>
                                     Đăng ký
                                 </button>
                             </div>
