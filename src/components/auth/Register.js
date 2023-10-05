@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react'
 import './style.scss'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 import Swal from 'sweetalert2'
 import axios from 'axios'
@@ -9,6 +9,7 @@ const Register = () => {
     const inputPassUp = useRef();
     const inputEmail = useRef();
     const inputRepass = useRef();
+    const navigate = useNavigate();
 
     const [ePass, setEpass] = useState('');
     const registerAccount = async () => {
@@ -48,6 +49,7 @@ const Register = () => {
                 timer: 1500
               })
               localStorage.setItem("token", token)
+              navigate('/')
         }
        else if(success == false){
             Swal.fire({
