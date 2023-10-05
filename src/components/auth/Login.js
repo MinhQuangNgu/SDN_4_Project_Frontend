@@ -1,11 +1,12 @@
 import React, { useRef } from 'react'
 import './style.scss';
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import Swal from 'sweetalert2';
 const Login = () => {
   const inputEmail = useRef();
   const inputPass = useRef();
+  const navigate = useNavigate();
   const loginAccount = async () => {
     const email = inputEmail.current.value;
     const pass = inputPass.current.value;
@@ -14,6 +15,8 @@ const Login = () => {
       password: pass
     }
     const user = await axios.post(`http://localhost:5000/user/login`, body);
+
+
 
     const { statusCode, success, data, token } = user.data.data;
     if (success == true) {
@@ -25,6 +28,8 @@ const Login = () => {
         timer: 1500
       })
       localStorage.setItem("token", token)
+      navigate('/');
+
     }
     else if (success == false) {
       Swal.fire({
