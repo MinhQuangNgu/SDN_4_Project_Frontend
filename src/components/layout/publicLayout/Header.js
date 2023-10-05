@@ -1,10 +1,14 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 const Header = () => {
-  const [wasLogin, setWasLogin] = useState(true);
+  const [wasLogin, setWasLogin] = useState(false);
+
+  useEffect(() => {
+    setWasLogin(window.localStorage.getItem('token') != null);
+  }, []);
   return (
     <>
-      <div style={{ backgroundColor: "#E1E4EB"}} className="container-fluid fixed-top px-0 wow fadeIn" data-wow-delay="0.1s">
+      <div style={{ backgroundColor: "#E1E4EB" }} className="container-fluid fixed-top px-0 wow fadeIn" data-wow-delay="0.1s">
         <div className="top-bar row gx-0 align-items-center d-none d-lg-flex">
           <div className="col-lg-6 px-5 text-start">
             <small><i className="fa fa-map-marker-alt me-2"></i>FPT University, Hòa Lạc, HN, VN</small>
@@ -40,7 +44,7 @@ const Header = () => {
               <Link style={{ textDecoration: "none", color: "black" }} className="btn-sm-square bg-white rounded-circle ms-3" to='/minhquang/profile'>
                 <i className="fa-regular fa-heart"></i>
               </Link>
-              {wasLogin ?
+              {!wasLogin ?
                 <Link style={{ textDecoration: "none", color: "black", padding: "0 10px", borderRadius: "20px", paddingTop: "2.5px" }} className=" bg-white ms-3" to='/login'>
                   <small className="text-body">Đăng nhập</small>
                 </Link> :
