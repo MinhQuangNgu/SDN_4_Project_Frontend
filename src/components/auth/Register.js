@@ -37,7 +37,7 @@ const Register = () => {
 
         }
 
-        let res = await axios.post(`http://localhost:5000/user`, body);
+        let res = await axios.post(`http://localhost:5000/user/register`, body);
         const {statusCode,success,data,token} = res.data.data
         if(success == true){
             Swal.fire({
