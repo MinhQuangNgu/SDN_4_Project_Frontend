@@ -14,28 +14,43 @@ const Login = () => {
       email: email,
       password: pass
     }
-    const user = await axios.post(`http://localhost:5000/user/token`, body);
-
-
-
-    const { statusCode, success, data, token } = user.data.data;
-    if (success == true) {
-      Swal.fire({
-        position: 'top-end',
-        icon: 'success',
-        title: 'Login Success',
-        showConfirmButton: false,
-        timer: 1500
-      })
-      localStorage.setItem("token", token)
-      navigate('/');
-
-    }
-    else if (success == false) {
+    try {
+      
+      const user = await axios.post(`http://localhost:5000/user/login`, body);
+      const { statusCode, success, data, token } = user.data.data;
+      if (success == true) {
+        Swal.fire({
+          position: 'top-end',
+          icon: 'success',
+          title: 'Login Success',
+          showConfirmButton: false,
+          timer: 1500
+        })
+        localStorage.setItem("token", token)
+        console.log(typeof data);
+        localStorage.setItem("user", JSON.stringify(data));
+        console.log("=================================");
+        const user = JSON.parse(localStorage.getItem('user'));
+        console.log(user);
+        navigate('/');
+  
+      }
+      else {
+  
+        Swal.fire({
+          position: 'top-end',
+          icon: 'error',
+          title: data,
+          showConfirmButton: false,
+          timer: 1500
+        })
+  
+      }
+    } catch (error) {
       Swal.fire({
         position: 'top-end',
         icon: 'error',
-        title: data,
+        title: "Error network",
         showConfirmButton: false,
         timer: 1500
       })

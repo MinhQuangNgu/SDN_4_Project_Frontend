@@ -8,6 +8,7 @@ import Searching from "../components/search/Searching";
 import Admin from "../components/admin/Admin";
 import CreateRecipe from "../components/recipe/CreateRecipe";
 import Forgot from "../components/auth/Forgot";
+import ChangePassword from '../components/auth/ChangePassword';
 export const publicRouter = [
 	{
 		element: Home,
@@ -25,6 +26,10 @@ export const publicRouter = [
 	{
 		element: Forgot,
 		path: "/forgot",
+	},
+	{
+		element: ChangePassword,
+		path: "/change-password/:id/:token",
 	},
 	{
 		element: Profile,

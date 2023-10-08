@@ -1,7 +1,25 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 const Header = () => {
-  const [wasLogin, setWasLogin] = useState(false);
+  const [wasLogin, setWasLogin] = useState(true);
+  const data = JSON.parse(localStorage.getItem('user'));
+  const [user, setUser] = useState(data);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const handleLogout = () =>{
+    console.log(12345);
+    localStorage.removeItem('user');
+    setWasLogin(true)
+  }
+  useEffect(() => {
+    if (user) {
+      setWasLogin(false);
+    }
+  }, [user]);
 
   useEffect(() => {
     setWasLogin(window.localStorage.getItem('token') != null);
@@ -48,14 +66,43 @@ const Header = () => {
                 <Link style={{ textDecoration: "none", color: "black", padding: "0 10px", borderRadius: "20px", paddingTop: "2.5px" }} className=" bg-white ms-3" to='/login'>
                   <small className="text-body">Đăng nhập</small>
                 </Link> :
-                <Link style={{ textDecoration: "none", color: "black" }} className="btn-sm-square bg-white rounded-circle ms-3" to='/'>
+                <Link
+                  style={{ textDecoration: 'none', color: 'black' }}
+                  className="btn-sm-square bg-white rounded-circle ms-3 position-relative"
+                  to="/"
+                  onClick={toggleMenu}
+                >
                   <small className="fa fa-user text-body"></small>
+                  {isOpen && user && (
+                    <div className="btn-group position-absolute top-100 mt-1 ">
+                      {/* // chỉnh theo vị trí yeeu cầu
+                      ấn vào thì mở nó ra
+                      */}
+                     <div style={{backgroundColor:'white',padding:'5px', borderRadius: '10px',  width: '120px'}}>
+                     <span className="ms-3" style={{marginLeft: 0, color: "blue"}}>Name: {user.name}</span> <br/>
+                      <button
+                        className="btn btn-link"
+                        onClick={handleLogout}
+                      >
+                        Logout
+                      </button><br/>
+                      <button to="/dashboard" className="btn btn-link">
+                        Dashboard
+                      </button>
+                     </div>
+                     
+                    </div>
+                  )}
                 </Link>
+
+
               }
+
+
             </div>
           </div>
-        </nav>
-      </div>
+        </nav >
+      </div >
     </>
   )
 }
