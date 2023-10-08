@@ -20,6 +20,10 @@ const Header = () => {
       setWasLogin(false);
     }
   }, [user]);
+
+  useEffect(() => {
+    setWasLogin(window.localStorage.getItem('token') != null);
+  }, []);
   return (
     <>
       <div style={{ backgroundColor: "#E1E4EB" }} className="container-fluid fixed-top px-0 wow fadeIn" data-wow-delay="0.1s">
@@ -58,7 +62,7 @@ const Header = () => {
               <Link style={{ textDecoration: "none", color: "black" }} className="btn-sm-square bg-white rounded-circle ms-3" to='/minhquang/profile'>
                 <i className="fa-regular fa-heart"></i>
               </Link>
-              {wasLogin ?
+              {!wasLogin ?
                 <Link style={{ textDecoration: "none", color: "black", padding: "0 10px", borderRadius: "20px", paddingTop: "2.5px" }} className=" bg-white ms-3" to='/login'>
                   <small className="text-body">Đăng nhập</small>
                 </Link> :

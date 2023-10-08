@@ -22,6 +22,10 @@ function App() {
     } else {
       setStore({ rule: "user" });
     }
+    if(window.localStorage.token){
+      const decoded = jwt_decode(window.localStorage.token);
+      setStore({ rule: decoded.role });
+    }
   }, [auth.user?.token]);
   useEffect(() => {
     dispatch(isSuccess());
@@ -58,7 +62,7 @@ function App() {
                 />
               );
             })}
-            {store.rule === "ROLE_ADMIN" &&
+            {store.rule === "admin" &&
               adminRouter.map((item, index) => {
                 const Page = item.element;
                 return item.layout ? (
