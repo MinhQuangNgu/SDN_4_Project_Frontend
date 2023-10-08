@@ -30,35 +30,47 @@ const Register = () => {
             return;
         }
 
-        const body = {
-            name: username,
-            email: email,
-            password: password,
-            role: "user",
+        try {
 
-        }
 
-        let res = await axios.post(`http://localhost:5000/user/register`, body);
-        const {statusCode,success,data,token} = res.data.data
-        if(success == true){
-            Swal.fire({
-                position: 'top-end',
-                icon: 'success',
-                title: 'Register Success',
-                showConfirmButton: false,
-                timer: 1500
-              })
-              localStorage.setItem("token", token)
-              navigate('/')
-        }
-       else if(success == false){
+            const body = {
+                name: username,
+                email: email,
+                password: password,
+                role: "user",
+
+            }
+
+            let res = await axios.post(`http://localhost:5000/user/register`, body);
+            const { statusCode, success, data, token } = res.data.data
+            if (success == true) {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Register Success',
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+                localStorage.setItem("token", token)
+                navigate('/')
+            }
+            else {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'error',
+                    title: data,
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+            }
+        } catch (error) {
             Swal.fire({
                 position: 'top-end',
                 icon: 'error',
-                title: data,
+                title: "Error network",
                 showConfirmButton: false,
                 timer: 1500
-              })
+            })
         }
     }
     return (
