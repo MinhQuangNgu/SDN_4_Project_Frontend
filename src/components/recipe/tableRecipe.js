@@ -1,12 +1,23 @@
 import { useEffect, useState } from 'react'
 import './style.scss'
 import axios from 'axios';
+import { getRecipe } from './recipeService';
 const TableRecipe = () => {
-    const [dataRecipe, setDataRecipt] = useState([]);
+    const [dataRecipe, setDataRecipe] = useState([]);
     console.log(dataRecipe);
     useEffect(() => {
-        axios.get('http://localhost:5000/recipe').then(dataRecipe => { setDataRecipt(dataRecipe.data.allRecipe) });
+        getRecipe().then(data => {setDataRecipe(data.data.allRecipe)})
     }, [])
+    const handleDelete = (id) => {
+        axios.delete(`http://localhost:5000/recipe/${id}`).then(() => {
+            // Xóa thành công, cập nhật lại state dataRecipe
+            setDataRecipe(prevData => prevData.filter(data => data._id !== id));
+        })
+        .catch(error => {
+            // Xử lý lỗi khi xóa không thành công
+            console.log(error);
+        });
+    }
     return (<div className='list-recipe'>
         <h2>Your Recipes</h2>
         <table>
@@ -27,7 +38,7 @@ const TableRecipe = () => {
                                     <td>{index+1}</td>
                                     <td>{data.name}</td>
                                     <td>{data.createdAt}</td>
-                                    <td><button className='btn btn-outline-danger'>Edit </button><button className='btn btn-outline-danger'>Delete </button></td>
+                                    <td><button className='btn btn-outline-danger'>Edit </button><button onClick={() => handleDelete(data._id)} className='btn btn-outline-danger'>Delete </button></td>
                                     </tr>
                             )
                         })
