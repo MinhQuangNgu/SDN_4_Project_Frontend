@@ -14,7 +14,7 @@ const Login = () => {
       email: email,
       password: pass
     }
-    const user = await axios.post(`http://localhost:5000/user/token`, body);
+    const user = await axios.post(`http://localhost:5000/user/login`, body);
 
 
 

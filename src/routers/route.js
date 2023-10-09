@@ -8,6 +8,8 @@ import Searching from "../components/search/Searching";
 import Admin from "../components/admin/Admin";
 import CreateRecipe from "../components/recipe/CreateRecipe";
 import Forgot from "../components/auth/Forgot";
+import TableRecipe from "../components/recipe/tableRecipe";
+
 export const publicRouter = [
 	{
 		element: Home,
@@ -44,6 +46,11 @@ export const publicRouter = [
 		element: Searching,
 		path: "/search",
 		layout: Publiclayout,
+	},
+	{
+		element: TableRecipe,
+		path: "/recipe/myrecipe"
+		
 	}
 ];
 export const adminRouter = [

@@ -10,12 +10,12 @@ import {
     Modifier,
     convertFromHTML,
 } from "draft-js";
-import { useNavigate } from 'react-router-dom';
+import { redirect, useNavigate } from 'react-router-dom';
 const CreateRecipe = () => {
     const [recipe_name, setRecipe_name] = useState('')
     const [recipe_introduction, setRecipe_introduction] = useState('')
     console.log(recipe_introduction);
-    console.log(recipe_name) ;
+    console.log(recipe_name);
 
     const navigate = useNavigate();
 
@@ -73,9 +73,10 @@ const CreateRecipe = () => {
     const handleBackPage = () => {
         navigate(-1);
     }
-    const handleSubmitRecipe = async() =>{
-        console.log(recipe_name+recipe_introduction+recipe_details);
-            return await axios.post(`http://localhost:5000/recipe`,{name:recipe_name, introduction: recipe_introduction, recipes: recipe_details})
+    const handleSubmitRecipe = async () => {
+        console.log(recipe_name + recipe_introduction + recipe_details);
+        await axios.post(`http://localhost:5000/recipe`, { name: recipe_name, introduction: recipe_introduction, recipes: recipe_details })
+        navigate("/recipe/myrecipe")
 
     }
     return (
@@ -106,10 +107,10 @@ const CreateRecipe = () => {
                     <div style={{ width: "400px" }} className='create_form' action="">
                         <h3 style={{ marginBottom: "30px" }}>Tạo công thức</h3>
                         <div class="form-holder active w-100">
-                            <textarea style={{ width: "100%", minHeight: "100px" }} type="text" placeholder="Tên món ăn" class="form-control" onChange={e=>setRecipe_name(e.target.value)}/>
+                            <textarea style={{ width: "100%", minHeight: "100px" }} type="text" placeholder="Tên món ăn" class="form-control" onChange={e => setRecipe_name(e.target.value)} />
                         </div>
                         <div class="form-holder active">
-                            <textarea style={{ width: "100%", minHeight: "200px" }} type="text" placeholder="Giới thiệu món ăn" class="form-control" onChange={e=>setRecipe_introduction(e.target.value)} />
+                            <textarea style={{ width: "100%", minHeight: "200px" }} type="text" placeholder="Giới thiệu món ăn" class="form-control" onChange={e => setRecipe_introduction(e.target.value)} />
                         </div>
                     </div>
                 </div>
