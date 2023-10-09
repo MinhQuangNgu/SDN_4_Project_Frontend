@@ -49,13 +49,14 @@ export const publicRouter = [
 		element: Searching,
 		path: "/search",
 		layout: Publiclayout,
-	}
-];
-export const adminRouter = [
+	},
 	{
 		element: Admin,
 		path: "/admin/manager/:slug"
 	}
+];
+export const adminRouter = [
+	
 ];
 
 export const userRouter = [

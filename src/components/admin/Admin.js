@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import './style.scss'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import Dashboard from './Dashboard'
 import Accounts from './Accounts'
 import Recipes from './Recipes'
@@ -8,10 +8,20 @@ import Recipes from './Recipes'
 
 const Admin = () => {
   const { slug } = useParams();
+
+  const navigate = useNavigate();
   const [type, setType] = useState('');
   useEffect(() => {
     setType(slug);
   }, [slug]);
+
+  const [user,setUser] = useState(null);
+  const [userTagObj, setUserTagObj] = useState({});
+
+    useEffect(() => {
+        const storeUser = localStorage.getItem("user");
+        setUser(JSON.parse(storeUser));
+    },[]);
 
   return (
     <>
@@ -27,7 +37,7 @@ const Admin = () => {
                 <div className="bg-success rounded-circle border border-2 border-white position-absolute end-0 bottom-0 p-1"></div>
               </div>
               <div className="ms-3">
-                <h6 className="mb-0">Jhon Doe</h6>
+                <h6 className="mb-0">{user?.name}</h6>
                 <span>Admin</span>
               </div>
             </div>
@@ -54,12 +64,17 @@ const Admin = () => {
               <div className="nav-item dropdown">
                 <div style={{ cursor: "pointer" }} className="nav-link dropdown-toggle" data-bs-toggle="dropdown">
                   <img className="rounded-circle me-lg-2" src="https://res.cloudinary.com/sttruyen/image/upload/v1694770081/another/kgxpacycwxq7aqeww2e8.gif" alt="" style={{ width: "40px", height: "40px" }} />
-                  <span className="d-none d-lg-inline-flex">John Doe</span>
+                  <span className="d-none d-lg-inline-flex">{user?.name}</span>
                 </div>
                 <div className="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
-                  <div style={{ cursor: "pointer" }} className="drop_item">My Profile</div>
-                  <div style={{ cursor: "pointer" }} className="drop_item">Settings</div>
-                  <div style={{ cursor: "pointer" }} className="drop_item">Log Out</div>
+                  <div onClick={() => {
+                    navigate(`/${user?._id}/profile`)
+                  }} style={{ cursor: "pointer" }} className="drop_item">My Profile</div>
+                  <div onClick={() => {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem("user");
+                    navigate('/');
+                  }} style={{ cursor: "pointer" }} className="drop_item">Log Out</div>
                 </div>
               </div>
             </div>
