@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react'
+import { useDropzone } from 'react-dropzone'
 import './style.scss'
 import { Editor } from "react-draft-wysiwyg";
-import { useDropzone } from 'react-dropzone'
 import {
     EditorState,
     ContentState,
