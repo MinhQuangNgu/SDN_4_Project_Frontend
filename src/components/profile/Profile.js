@@ -13,8 +13,9 @@ const Profile = () => {
     const navigate = useNavigate();
 
     const [user, setUser] = useState({});
+    const followingRef = useRef(false);
 
-    const [reload,setReload] = useState(false);
+    const [reload, setReload] = useState(false);
 
     const nameRef = useRef();
     const addressRef = useRef();
@@ -55,6 +56,9 @@ const Profile = () => {
                 .then(res => {
                     setUser(res.data?.user);
                     let userTag = {};
+                    if(res.data?.user.your_following){
+                        followingRef.current = res.data?.user.your_following.includes(slug);
+                    }
                     res.data?.user?.tags?.forEach(item => {
                         userTag = {
                             ...userTag,
@@ -76,7 +80,7 @@ const Profile = () => {
                     })
                 })
         }
-    }, [slug,reload])
+    }, [slug, reload])
 
     const handleEditProfile = async () => {
         try {
@@ -93,7 +97,6 @@ const Profile = () => {
                     );
                     urlImage = "https:" + res.data.url.split(":")[1];
                 } catch (err) {
-                    console.log(err)
                     Swal.fire({
                         position: 'top-end',
                         icon: 'error',
@@ -114,8 +117,8 @@ const Profile = () => {
                     v: urlImage
                 },
                 {
-                    k:"about_me",
-                    v:aboutMeRef.current.value
+                    k: "about_me",
+                    v: aboutMeRef.current.value
                 }
             ]
             const data = await axios.post(`/user/update/${slug}`, {
@@ -147,6 +150,35 @@ const Profile = () => {
         }
     }
 
+    const handleFollow = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const data = await axios.post(`/user/f_m/${slug}`, {
+
+            }, {
+                headers: {
+                    authorization: `Bearer ${token}`
+                }
+            });
+            Swal.fire({
+                position: 'top-end',
+                icon: 'success',
+                title: data?.data?.msg,
+                showConfirmButton: false,
+                timer: 1500
+            })
+            setReload(pre => !pre);
+        }
+        catch (err) {
+            Swal.fire({
+                position: 'top-end',
+                icon: 'error',
+                title: err?.message,
+                showConfirmButton: false,
+                timer: 1500
+            })
+        }
+    }
     useEffect(() => {
         window.scrollTo(0, 0);
     }, []);
@@ -201,9 +233,7 @@ const Profile = () => {
                                                 setEdit(false);
                                             }} type="button" className="btn btn-secondary">Hủy</button>
                                         </div>) :
-                                        <button onClick={() => {
-                                            setEdit(true);
-                                        }} style={{ backgroundColor: "#93E2BB", border: "none" }} type="button" className="btn btn-primary">Theo dõi</button>
+                                        <button onClick={handleFollow} style={{ backgroundColor: "#93E2BB", border: "none" }} type="button" className="btn btn-primary">{followingRef.current ? 'Đang theo dõi' : 'Theo dõi'}</button>
 
                                     }
                                 </div>
@@ -213,8 +243,8 @@ const Profile = () => {
                                     <ul className="list-group list-group-flush rounded-3">
                                         <li className="list-group-item p-3">
                                             <h5 className="mb-2">About Me</h5>
-                                            {!edit ? <p className="mb-0">{userTagObj?.about_me || "None"}</p>:
-                                            <textarea ref={aboutMeRef} className='text-muted mb-0 custom_input_profile' defaultValue={userTagObj?.about_me || "None"} type='text' />
+                                            {!edit ? <p className="mb-0">{userTagObj?.about_me || "None"}</p> :
+                                                <textarea ref={aboutMeRef} className='text-muted mb-0 custom_input_profile' defaultValue={userTagObj?.about_me || "None"} type='text' />
                                             }
                                         </li>
                                     </ul>
@@ -265,15 +295,15 @@ const Profile = () => {
                                     <div>
                                         <div onClick={() => {
                                             setType("");
-                                        }} className={type === '' && 'active'}>
+                                        }} className={type === '' ? 'active' : ''}>
                                             <i>Công thức của mình</i>
                                         </div>
-                                        <div className={type === 'love' && 'active'} onClick={() => {
+                                        <div className={type === 'love' ? 'active' : ''} onClick={() => {
                                             setType("love");
                                         }}>
                                             <i>Công thức yêu thích</i>
                                         </div>
-                                        <div className={type === 'follow' && 'active'} onClick={() => {
+                                        <div className={type === 'follow' ? 'active' : ''} onClick={() => {
                                             setType("follow");
                                         }}>
                                             <i>Đang theo dõi</i>
