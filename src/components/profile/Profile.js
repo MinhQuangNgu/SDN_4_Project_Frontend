@@ -1,13 +1,32 @@
 import React, { useEffect, useState } from 'react'
 import './style.scss'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import OwnRecipeCard from '../card/OwnRecipeCard';
 import RecipeCard from '../card/RecipeCard';
+import axios from 'axios'
 const Profile = () => {
     const [type, setType] = useState("");
     const [edit, setEdit] = useState(false);
 
     const navigate = useNavigate();
+
+    const {slug} = useParams();
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if(slug){
+            axios.get(`/user/${slug}`,{
+                headers:{
+                    token:`Bearer ${token}`
+                }
+            })
+                .then(res => {
+                    console.log(res.data)
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+        }
+    },[slug])
 
     useEffect(() => {
         window.scrollTo(0, 0);

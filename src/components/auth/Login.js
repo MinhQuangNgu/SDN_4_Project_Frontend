@@ -16,7 +16,7 @@ const Login = () => {
     }
     try {
       
-      const user = await axios.post(`http://localhost:5000/user/login`, body);
+      const user = await axios.post(`/user/login`, body);
       const { statusCode, success, data, token } = user.data.data;
       if (success == true) {
         Swal.fire({

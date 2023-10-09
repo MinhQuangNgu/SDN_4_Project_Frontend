@@ -1,29 +1,36 @@
 import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import './style.scss'
+import Swal from 'sweetalert2';
 const Header = () => {
   const [wasLogin, setWasLogin] = useState(true);
-  const data = JSON.parse(localStorage.getItem('user'));
-  const [user, setUser] = useState(data);
+  const [user,setUser] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
 
   const handleLogout = () =>{
-    console.log(12345);
+    localStorage.removeItem('token');
     localStorage.removeItem('user');
-    setWasLogin(true)
+    setWasLogin(false);
+    Swal.fire({
+      position: 'top-end',
+      icon: 'success',
+      title: 'Đăng xuất thành công.',
+      showConfirmButton: false,
+      timer: 1500
+    })
+    navigate('/');
   }
-  useEffect(() => {
-    if (user) {
-      setWasLogin(false);
-    }
-  }, [user]);
 
   useEffect(() => {
     setWasLogin(window.localStorage.getItem('token') != null);
+    setUser(window.localStorage.getItem('user') ? JSON.parse(window.localStorage.getItem('user')) : null);
   }, []);
+
   return (
     <>
       <div style={{ backgroundColor: "#E1E4EB" }} className="container-fluid fixed-top px-0 wow fadeIn" data-wow-delay="0.1s">
@@ -66,36 +73,28 @@ const Header = () => {
                 <Link style={{ textDecoration: "none", color: "black", padding: "0 10px", borderRadius: "20px", paddingTop: "2.5px" }} className=" bg-white ms-3" to='/login'>
                   <small className="text-body">Đăng nhập</small>
                 </Link> :
-                <Link
-                  style={{ textDecoration: 'none', color: 'black' }}
+                <div
+                  style={{ textDecoration: 'none', color: 'black',cursor:"pointer" }}
                   className="btn-sm-square bg-white rounded-circle ms-3 position-relative"
-                  to="/"
                   onClick={toggleMenu}
                 >
                   <small className="fa fa-user text-body"></small>
-                  {isOpen && user && (
-                    <div className="btn-group position-absolute top-100 mt-1 ">
-                      {/* // chỉnh theo vị trí yeeu cầu
-                      ấn vào thì mở nó ra
-                      */}
-                     <div style={{backgroundColor:'white',padding:'5px', borderRadius: '10px',  width: '120px'}}>
-                     <span className="ms-3" style={{marginLeft: 0, color: "blue"}}>Name: {user.name}</span> <br/>
-                      <button
-                        className="btn btn-link"
-                        onClick={handleLogout}
-                      >
-                        Logout
-                      </button><br/>
-                      <button to="/dashboard" className="btn btn-link">
-                        Dashboard
-                      </button>
-                     </div>
-                     
-                    </div>
-                  )}
-                </Link>
-
-
+                  {isOpen && <div className='header_user'>
+                      <div className='header_user_n'>
+                        <p><i>Name: {user?.name}</i></p>
+                      </div>
+                      <div onClick={() => {
+                        navigate(`/${user?._id}/profile`)
+                      }} className='header_user_n'>
+                        <p>Profile</p>
+                      </div>
+                      <div onClick={handleLogout} className='header_user_n'>
+                        <p>
+                            Đăng xuất
+                        </p>
+                      </div>
+                    </div>}
+                </div>
               }
 
 
