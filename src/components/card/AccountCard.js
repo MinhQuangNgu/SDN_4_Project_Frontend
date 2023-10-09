@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import Select from 'react-select';
-const AccountCard = () => {
+import moment from 'moment'
+const AccountCard = ({user,index}) => {
     const [edit, setEdit] = useState(false);
     const [selectedOption, SetSelectedOption] = useState( { value: 'user', label: 'User' });
 
@@ -10,23 +11,23 @@ const AccountCard = () => {
     }
     const colourOptions = [
         { value: 'admin', label: 'Admin' },
-        { value: 'Chief', label: 'Đầu bếp' },
+        { value: 'chief', label: 'Đầu bếp' },
         { value: 'user', label: 'User' },
     ];
     return (
         <tr className="alert" role="alert">
             <td className="border-bottom-0-custom">
-                50
+                {index + 1}
             </td>
             <td className="d-flex align-items-center border-bottom-0-custom">
                 <div className="img" style={{ backgroundImage: "url('https://res.cloudinary.com/sttruyen/image/upload/v1694421667/sfcf5rwxxbjronvxlaef.jpg')", marginRight: "10px" }}></div>
                 <div className="pl-3 email">
                     <span>
-                        <Link to='/minquang/profile'>
-                            garybird@email.com
+                        <Link to={`/${user?._id}/profile`}>
+                            {user?.email}
                         </Link>
                     </span>
-                    <span>Added: 01/03/2020</span>
+                    <span>{moment(user?.createdAt).fromNow()}</span>
                 </div>
             </td>
             <td className="border-bottom-0-custom">
@@ -40,8 +41,8 @@ const AccountCard = () => {
                     />
                 </div> : selectedOption.value}
             </td>
-            <td className="border-bottom-0-custom">50</td>
-            <td className="border-bottom-0-custom">50</td>
+            <td className="border-bottom-0-custom">{user?.ownerRecipes?.length}</td>
+            <td className="border-bottom-0-custom">{user?.followers?.length}</td>
             <td className="status border-bottom-0-custom"><span className="active">Active</span></td>
             <td className="border-bottom-0-custom">
                 {!edit ? <>

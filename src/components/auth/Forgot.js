@@ -1,7 +1,46 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import { Link } from 'react-router-dom'
-
+import axios from 'axios'
+import Swal from 'sweetalert2';
 const Forgot = () => {
+  const inputEmail = useRef();
+  const forgotPassword = async () => {
+    const email = inputEmail.current.value;
+    console.log(email);
+    const body = { email: email };
+    try {
+      
+      const res = await axios.post(`http://localhost:5000/user/forgot-password`, body);
+      const { success, data } = res.data;
+      if (success == true) {
+        Swal.fire({
+          position: 'top-end',
+          icon: 'success',
+          title: 'Send Email Successfully',
+          showConfirmButton: false,
+          timer: 1500
+        })
+      }
+      else {
+        Swal.fire({
+          position: 'top-end',
+          icon: 'error',
+          title: data,
+          showConfirmButton: false,
+          timer: 1500
+        })
+      }
+    } catch (error) {
+      Swal.fire({
+        position: 'top-end',
+        icon: 'error',
+        title: "Error network",
+        showConfirmButton: false,
+        timer: 1500
+      })
+    }
+
+  }
   return (
     <>
       <div className="limiter">
@@ -15,14 +54,14 @@ const Forgot = () => {
                 Quên mật khẩu
               </span>
               <div className="wrap-input100 validate-input" data-validate="Valid email is required: ex@abc.xyz">
-                <input className="input100 input_custom_auth" type="text" name="email" placeholder="Email" />
+                <input className="input100 input_custom_auth" type="text" name="email" placeholder="Email" ref={inputEmail} />
                 <span className="focus-input100"></span>
                 <span className="symbol-input100">
                   <i className="fa fa-envelope" aria-hidden="true"></i>
                 </span>
               </div>
               <div className="container-login100-form-btn">
-                <button className="login100-form-btn custom_btn_auth">
+                <button className="login100-form-btn custom_btn_auth" onClick={forgotPassword}>
                   Quên mật khẩu
                 </button>
               </div>

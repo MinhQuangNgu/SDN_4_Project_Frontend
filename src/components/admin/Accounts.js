@@ -1,7 +1,31 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
 import AccountCard from '../card/AccountCard'
+import axios from 'axios';
+import Swal from 'sweetalert2'
 const Accounts = () => {
+
+    const [users,setUsers] = useState([]);
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        axios.get('/admin/user', {
+            headers: {
+                authorization: `Bearer ${token}`
+            }
+        })
+            .then(res => {
+                setUsers(res.data?.users);
+            })
+            .catch(err => {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'error',
+                    title: "Error network",
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+            })
+    }, []);
     return (
         <div>
             <section className="ftco-section">
@@ -21,63 +45,7 @@ const Accounts = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr className="alert" role="alert">
-                                        <td className="border-bottom-0-custom">
-                                            50
-                                        </td>
-                                        <td className="d-flex align-items-center border-bottom-0-custom">
-                                            <div className="img" style={{ backgroundImage: "url('https://res.cloudinary.com/sttruyen/image/upload/v1694421667/sfcf5rwxxbjronvxlaef.jpg')", marginRight: "10px" }}></div>
-                                            <div className="pl-3 email">
-                                                <span>
-                                                    <Link to='/minquang/profile'>
-                                                        garybird@email.com
-                                                    </Link>
-                                                </span>
-                                                <span>Added: 01/03/2020</span>
-                                            </div>
-                                        </td>
-                                        <td className="border-bottom-0-custom">Đầu bếp</td>
-                                        <td className="border-bottom-0-custom">50</td>
-                                        <td className="border-bottom-0-custom">50</td>
-                                        <td className="status border-bottom-0-custom"><span className="active">Active</span></td>
-                                        <td className="border-bottom-0-custom">
-                                            <button style={{ height: "30px", fontSize: "12px" }} type="button" className="btn btn-primary">
-                                                Sửa
-                                            </button>
-                                            <button style={{ marginLeft: "5px", height: "30px", fontSize: "12px" }} type="button" className="btn btn-danger">
-                                                Khóa
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr className="alert" role="alert">
-                                        <td className="border-bottom-0-custom">
-                                            50
-                                        </td>
-                                        <td className="d-flex align-items-center border-bottom-0-custom">
-                                            <div className="img" style={{ backgroundImage: "url('https://res.cloudinary.com/sttruyen/image/upload/v1694421667/sfcf5rwxxbjronvxlaef.jpg')", marginRight: "10px" }}></div>
-                                            <div className="pl-3 email">
-                                                <span>
-                                                    <Link to='/minquang/profile'>
-                                                        garybird@email.com
-                                                    </Link>
-                                                </span>
-                                                <span>Added: 01/03/2020</span>
-                                            </div>
-                                        </td>
-                                        <td className="border-bottom-0-custom">Đầu bếp</td>
-                                        <td className="border-bottom-0-custom">50</td>
-                                        <td className="border-bottom-0-custom">50</td>
-                                        <td className="status border-bottom-0-custom"><span className="active">Active</span></td>
-                                        <td className="border-bottom-0-custom">
-                                            <button style={{ height: "30px", fontSize: "12px" }} type="button" className="btn btn-primary">
-                                                Sửa
-                                            </button>
-                                            <button style={{ marginLeft: "5px", height: "30px", fontSize: "12px" }} type="button" className="btn btn-danger">
-                                                Khóa
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <AccountCard />
+                                   {users?.map((item,index) =>  <AccountCard index={index} key={item?._id + "user"} user={item}/>)}
                                 </tbody>
                             </table>
                         </div>
