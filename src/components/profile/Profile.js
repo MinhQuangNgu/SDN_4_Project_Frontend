@@ -14,14 +14,19 @@ const Profile = () => {
 
     const [user, setUser] = useState({});
 
+    const [reload,setReload] = useState(false);
+
     const nameRef = useRef();
     const addressRef = useRef();
+    const aboutMeRef = useRef();
+
+    const imageRef = useRef('');
 
 
     const onDrop = useCallback(files => {
-        const file =files[0];
+        const file = files[0];
         const reader = new FileReader();
-
+        imageRef.current = file;
         reader.onloadend = () => {
             const base64String = reader.result.split(',')[1];
             setImage(base64String);
@@ -71,21 +76,65 @@ const Profile = () => {
                     })
                 })
         }
-    }, [slug])
+    }, [slug,reload])
 
     const handleEditProfile = async () => {
         try {
-            const tag =[
+            const token = localStorage.getItem('token');
+            let urlImage = "";
+            if (imageRef.current) {
+                const formData = new FormData();
+                formData.append("file", imageRef.current);
+                formData.append("upload_preset", "sttruyenxyz");
+                try {
+                    const res = await axios.post(
+                        "https://api.cloudinary.com/v1_1/sttruyen/image/upload",
+                        formData
+                    );
+                    urlImage = "https:" + res.data.url.split(":")[1];
+                } catch (err) {
+                    console.log(err)
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: err?.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                    return;
+                }
+            }
+            const tags = [
                 {
-                    k:"adress",
-                    v:addressRef.current.value
+                    k: "address",
+                    v: addressRef.current.value
                 },
                 {
-                    k:"image",
-                    v:image
+                    k: "image",
+                    v: urlImage
+                },
+                {
+                    k:"about_me",
+                    v:aboutMeRef.current.value
                 }
             ]
+            const data = await axios.post(`/user/update/${slug}`, {
+                tags,
+                name: nameRef.current.value
+            }, {
+                headers: {
+                    authorization: `Bearer ${token}`
+                }
+            });
+            Swal.fire({
+                position: 'top-end',
+                icon: 'success',
+                title: data?.data?.message,
+                showConfirmButton: false,
+                timer: 1500
+            })
             setEdit(false);
+            setReload(pre => !pre);
         }
         catch (err) {
             Swal.fire({
@@ -164,7 +213,9 @@ const Profile = () => {
                                     <ul className="list-group list-group-flush rounded-3">
                                         <li className="list-group-item p-3">
                                             <h5 className="mb-2">About Me</h5>
-                                            <p className="mb-0">{userTagObj?.aboutMe || "None"}</p>
+                                            {!edit ? <p className="mb-0">{userTagObj?.about_me || "None"}</p>:
+                                            <textarea ref={aboutMeRef} className='text-muted mb-0 custom_input_profile' defaultValue={userTagObj?.about_me || "None"} type='text' />
+                                            }
                                         </li>
                                     </ul>
                                 </div>
