@@ -11,6 +11,7 @@ import {
     convertFromHTML,
 } from "draft-js";
 import { redirect, useNavigate } from 'react-router-dom';
+import CreatableSelect from 'react-select/creatable';
 const CreateRecipe = () => {
     const [recipe_name, setRecipe_name] = useState('')
     const [recipe_introduction, setRecipe_introduction] = useState('')
@@ -23,7 +24,7 @@ const CreateRecipe = () => {
         console.log(acceptedFiles);
     }, [])
 
-    const [image, setImage] = useState('asds');
+    const [image, setImage] = useState('');
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
     const [editorState, setEditorState] = useState(EditorState.createEmpty());
@@ -79,6 +80,14 @@ const CreateRecipe = () => {
         navigate("/recipe/myrecipe")
 
     }
+
+
+    const [colourOptions, setColourOptions] = useState([
+        { value: 'red', label: 'Red' },
+        { value: 'blue', label: 'Blue' },
+        { value: 'green', label: 'Green' },
+        { value: 'yellow', label: 'Yellow' }
+    ])
     return (
         <div className='create_recipe_container'>
             <div class="wrapper">
@@ -112,6 +121,11 @@ const CreateRecipe = () => {
                         <div class="form-holder active">
                             <textarea style={{ width: "100%", minHeight: "200px" }} type="text" placeholder="Giới thiệu món ăn" class="form-control" onChange={e => setRecipe_introduction(e.target.value)} />
                         </div>
+                    </div>
+                </div>
+                <div className='create_form-2'>
+                    <div style={{ margin: "10px 0" }} class="form-holder active w-100">
+                        <CreatableSelect isClearable placeholder="Chọn quốc gia" options={colourOptions} />
                     </div>
                 </div>
                 <div className='recipe_create'>

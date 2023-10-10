@@ -17,7 +17,7 @@
 
 .inner {
     max-width: 850px;
-    margin: auto;
+    margin-left: 15%;
     background: #fff;
     display: flex;
     box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
@@ -34,7 +34,14 @@
     padding-right: 30px;
     padding-left: 15px;
 }
-
+.create_form-2{
+    width: 20%;
+    background-color: #fff;
+    margin-left: 20px;
+    padding:10px;
+    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+}
 .create_recipe_container h3 {
     font-size: 35px;
     font-family: "ElMessiri-SemiBold";
