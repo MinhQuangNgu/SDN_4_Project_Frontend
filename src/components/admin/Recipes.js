@@ -1,17 +1,43 @@
-import React from 'react'
+import axios from 'axios';
+import moment from 'moment';
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-
+import Swal from 'sweetalert2'
 const Recipes = () => {
+
+    const [recipes, setRecipes] = useState([]);
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        axios.get('/admin/recipe', {
+            headers: {
+                authorization: `Bearer ${token}`
+            }
+        })
+            .then(res => {
+                console.log(res.data?.recipes);
+                setRecipes(res.data?.recipes);
+            })
+            .catch(err => {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'error',
+                    title: "Error network",
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+            })
+    }, []);
     return (
         <div>
-            <section class="ftco-section">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="table-wrap">
-                            <table class="table table-responsive-xl">
+            <section className="ftco-section">
+                <div className="row">
+                    <div className="col-md-12">
+                        <div className="table-wrap">
+                            <table className="table table-responsive-xl">
                                 <thead>
                                     <tr>
-                                        <th>ID</th>
+                                        <th>STT</th>
                                         <th>Tên món</th>
                                         <th>Người tạo</th>
                                         <th>Status</th>
@@ -19,24 +45,25 @@ const Recipes = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr class="alert" role="alert">
-                                        <td class="border-bottom-0-custom">
-                                            50
+                                    {recipes?.map((item,index) => 
+                                    <tr key={item?._id + "recipe"} className="alert" role="alert">
+                                        <td className="border-bottom-0-custom">
+                                            {index + 1}
                                         </td>
-                                        <td class="d-flex align-items-center border-bottom-0-custom">
-                                            <div class="img" style={{ backgroundImage: "url('https://res.cloudinary.com/sttruyen/image/upload/v1694421667/ksjctjx7rrwocptprfdx.jpg')", marginRight: "10px" }}></div>
-                                            <div class="pl-3 email">
+                                        <td className="d-flex align-items-center border-bottom-0-custom">
+                                            <div className="img" style={{ backgroundImage: "url('https://res.cloudinary.com/sttruyen/image/upload/v1694421667/ksjctjx7rrwocptprfdx.jpg')", marginRight: "10px" }}></div>
+                                            <div className="pl-3 email">
                                                 <span>
                                                     <Link to='/'>
-                                                        Súp canh chuyền thống
+                                                        {item?.name}
                                                     </Link>
                                                 </span>
-                                                <span>Added: 01/03/2020</span>
+                                                <span>Added:{moment(item?.createdAt).fromNow()}</span>
                                             </div>
                                         </td>
-                                        <td class="border-bottom-0-custom">
-                                            <div class="img" style={{ backgroundImage: "url('https://res.cloudinary.com/sttruyen/image/upload/v1694421667/ksjctjx7rrwocptprfdx.jpg')", marginLeft: "10px" }}></div>
-                                            <div class="pl-3 email">
+                                        <td className="border-bottom-0-custom">
+                                            <div className="img" style={{ backgroundImage: "url('https://res.cloudinary.com/sttruyen/image/upload/v1694421667/ksjctjx7rrwocptprfdx.jpg')", marginLeft: "10px" }}></div>
+                                            <div className="pl-3 email">
                                                 <span>
                                                     <Link to='/minhquang/profile'>
                                                         Minh Quang
@@ -44,77 +71,13 @@ const Recipes = () => {
                                                 </span>
                                             </div>
                                         </td>
-                                        <td class="status border-bottom-0-custom"><span class="active">Active</span></td>
-                                        <td class="border-bottom-0-custom">
-                                            <button style={{ marginLeft: "5px", height: "30px", fontSize: "12px" }} type="button" class="btn btn-danger">
+                                        <td className="status border-bottom-0-custom"><span className="active">Active</span></td>
+                                        <td className="border-bottom-0-custom">
+                                            <button style={{ marginLeft: "5px", height: "30px", fontSize: "12px" }} type="button" className="btn btn-danger">
                                                 Khóa
                                             </button>
                                         </td>
-                                    </tr>
-                                    <tr class="alert" role="alert">
-                                        <td class="border-bottom-0-custom">
-                                            50
-                                        </td>
-                                        <td class="d-flex align-items-center border-bottom-0-custom">
-                                            <div class="img" style={{ backgroundImage: "url('https://res.cloudinary.com/sttruyen/image/upload/v1694421667/ksjctjx7rrwocptprfdx.jpg')", marginRight: "10px" }}></div>
-                                            <div class="pl-3 email">
-                                                <span>
-                                                    <Link to='/'>
-                                                        Súp canh chuyền thống
-                                                    </Link>
-                                                </span>
-                                                <span>Added: 01/03/2020</span>
-                                            </div>
-                                        </td>
-                                        <td class="border-bottom-0-custom">
-                                            <div class="img" style={{ backgroundImage: "url('https://res.cloudinary.com/sttruyen/image/upload/v1694421667/ksjctjx7rrwocptprfdx.jpg')", marginLeft: "10px" }}></div>
-                                            <div class="pl-3 email">
-                                                <span>
-                                                    <Link to='/minhquang/profile'>
-                                                        Minh Quang
-                                                    </Link>
-                                                </span>
-                                            </div>
-                                        </td>
-                                        <td class="status border-bottom-0-custom"><span class="active">Active</span></td>
-                                        <td class="border-bottom-0-custom">
-                                            <button style={{ marginLeft: "5px", height: "30px", fontSize: "12px" }} type="button" class="btn btn-danger">
-                                                Khóa
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr class="alert" role="alert">
-                                        <td class="border-bottom-0-custom">
-                                            50
-                                        </td>
-                                        <td class="d-flex align-items-center border-bottom-0-custom">
-                                            <div class="img" style={{ backgroundImage: "url('https://res.cloudinary.com/sttruyen/image/upload/v1694421667/ksjctjx7rrwocptprfdx.jpg')", marginRight: "10px" }}></div>
-                                            <div class="pl-3 email">
-                                                <span>
-                                                    <Link to='/'>
-                                                        Súp canh chuyền thống
-                                                    </Link>
-                                                </span>
-                                                <span>Added: 01/03/2020</span>
-                                            </div>
-                                        </td>
-                                        <td class="border-bottom-0-custom">
-                                            <div class="img" style={{ backgroundImage: "url('https://res.cloudinary.com/sttruyen/image/upload/v1694421667/ksjctjx7rrwocptprfdx.jpg')", marginLeft: "10px" }}></div>
-                                            <div class="pl-3 email">
-                                                <span>
-                                                    <Link to='/minhquang/profile'>
-                                                        Minh Quang
-                                                    </Link>
-                                                </span>
-                                            </div>
-                                        </td>
-                                        <td class="status border-bottom-0-custom"><span class="active">Active</span></td>
-                                        <td class="border-bottom-0-custom">
-                                            <button style={{ marginLeft: "5px", height: "30px", fontSize: "12px" }} type="button" class="btn btn-danger">
-                                                Khóa
-                                            </button>
-                                        </td>
-                                    </tr>
+                                    </tr>)}
                                 </tbody>
                             </table>
                         </div>
