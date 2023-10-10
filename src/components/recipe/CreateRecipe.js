@@ -1,7 +1,8 @@
-import React, { useCallback, useState } from 'react'
-import { useDropzone } from 'react-dropzone'
+import React, { useCallback, useState, useRef } from 'react'
 import './style.scss'
 import { Editor } from "react-draft-wysiwyg";
+import { useDropzone } from 'react-dropzone'
+import axios from 'axios';
 import {
     EditorState,
     ContentState,
@@ -9,9 +10,12 @@ import {
     Modifier,
     convertFromHTML,
 } from "draft-js";
-import {useNavigate} from 'react-router-dom';
+import { redirect, useNavigate } from 'react-router-dom';
 const CreateRecipe = () => {
-
+    const [recipe_name, setRecipe_name] = useState('')
+    const [recipe_introduction, setRecipe_introduction] = useState('')
+    console.log(recipe_introduction);
+    console.log(recipe_name);
 
     const navigate = useNavigate();
 
@@ -19,10 +23,12 @@ const CreateRecipe = () => {
         console.log(acceptedFiles);
     }, [])
 
-    const [image,setImage] = useState('asds');
+    const [image, setImage] = useState('asds');
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
     const [editorState, setEditorState] = useState(EditorState.createEmpty());
+    const recipe_details = editorState.getCurrentContent().getPlainText();
+    console.log(editorState.getCurrentContent().getPlainText());
     const handleChange = (data) => {
         setEditorState(data);
     };
@@ -67,6 +73,12 @@ const CreateRecipe = () => {
     const handleBackPage = () => {
         navigate(-1);
     }
+    const handleSubmitRecipe = async () => {
+        console.log(recipe_name + recipe_introduction + recipe_details);
+        await axios.post(`http://localhost:5000/recipe`, { name: recipe_name, introduction: recipe_introduction, recipes: recipe_details })
+        navigate("/recipe/myrecipe")
+
+    }
     return (
         <div className='create_recipe_container'>
             <div class="wrapper">
@@ -88,17 +100,17 @@ const CreateRecipe = () => {
                                         </i>
                                     </div>
                                 </div> :
-                                <img style={{ width: "400px", height: "500px", objectFit: "cover" }} src="https://res.cloudinary.com/sttruyen/image/upload/v1694748169/gwrobojgvpbfyejhb40j.jpg" alt="" />
+                                    <img style={{ width: "400px", height: "500px", objectFit: "cover" }} src="https://res.cloudinary.com/sttruyen/image/upload/v1694748169/gwrobojgvpbfyejhb40j.jpg" alt="" />
                             }
                         </div>
                     </div>
                     <div style={{ width: "400px" }} className='create_form' action="">
                         <h3 style={{ marginBottom: "30px" }}>Tạo công thức</h3>
                         <div class="form-holder active w-100">
-                            <textarea style={{ width: "100%", minHeight: "100px" }} type="text" placeholder="Tên món ăn" class="form-control" />
+                            <textarea style={{ width: "100%", minHeight: "100px" }} type="text" placeholder="Tên món ăn" class="form-control" onChange={e => setRecipe_name(e.target.value)} />
                         </div>
                         <div class="form-holder active">
-                            <textarea style={{ width: "100%", minHeight: "200px" }} type="text" placeholder="Giới thiệu món ăn" class="form-control" />
+                            <textarea style={{ width: "100%", minHeight: "200px" }} type="text" placeholder="Giới thiệu món ăn" class="form-control" onChange={e => setRecipe_introduction(e.target.value)} />
                         </div>
                     </div>
                 </div>
@@ -138,13 +150,13 @@ const CreateRecipe = () => {
                             }}
                         />
                     </div>
-                    <div style={{ marginTop: "30px", marginBottom: "20px" }} className='d-flex justify-content-center'>
+                    <div style={{ marginTop: "30px", marginBottom: "20px" }} className='d-flex justify-content-center' onClick={handleSubmitRecipe}>
                         <button>Tạo mới</button>
                     </div>
                 </div>
             </div>
             <div className='back_button'>
-                <button onClick={handleBackPage}> <i style={{marginRight:"10px"}} className="fa-solid fa-arrow-left"></i>Quay lại</button>
+                <button onClick={handleBackPage}> <i style={{ marginRight: "10px" }} className="fa-solid fa-arrow-left"></i>Quay lại</button>
             </div>
         </div>
     )

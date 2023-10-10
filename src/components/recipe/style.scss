@@ -4,7 +4,8 @@
     align-items: center;
     flex-wrap: wrap;
 }
-.create_recipe_container{
+
+.create_recipe_container {
     padding-top: 50px;
     min-height: 100vh;
     display: flex;
@@ -13,6 +14,7 @@
     background: url("https://res.cloudinary.com/sttruyen/image/upload/v1694855426/bsaoyb190aabhri2rrot.jpg") no-repeat;
     background-size: cover;
 }
+
 .inner {
     max-width: 850px;
     margin: auto;
@@ -274,7 +276,8 @@
         background: none;
     }
 }
-.recipe_create{
+
+.recipe_create {
     width: 60%;
     min-height: 300px;
     background-color: white;
@@ -286,19 +289,52 @@
     -o-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
     margin-top: 30px;
     margin-bottom: 20px;
-    padding:0 10px;
+    padding: 0 10px;
 }
-.recipe_create_edit{
-    border:2px solid rgba(0, 0, 0, 0.1);
-    padding:10px;
+
+.recipe_create_edit {
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    padding: 10px;
 }
-.back_button{
+
+.back_button {
     position: fixed;
-    top:20px;
-    left:20px;
-    & > button{
+    top: 20px;
+    left: 20px;
+
+    &>button {
         font-size: 12px;
-        padding:0 10px;
+        padding: 0 10px;
         height: 40px;
+    }
+}
+
+h2 {
+    text-align: center;
+}
+
+.list-recipe {
+    table {
+        width: 100%;
+        border-collapse: collapse;
+
+        th,
+        td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #ddd;
+        }
     }
 }

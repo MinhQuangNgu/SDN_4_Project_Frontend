@@ -9,6 +9,8 @@ import Admin from "../components/admin/Admin";
 import CreateRecipe from "../components/recipe/CreateRecipe";
 import Forgot from "../components/auth/Forgot";
 import ChangePassword from '../components/auth/ChangePassword';
+import TableRecipe from "../components/recipe/tableRecipe";
+
 export const publicRouter = [
 	{
 		element: Home,
@@ -49,7 +51,9 @@ export const publicRouter = [
 		element: Searching,
 		path: "/search",
 		layout: Publiclayout,
-	},
+	}
+];
+export const adminRouter = [
 	{
 		element: Admin,
 		path: "/admin/manager/:slug"
