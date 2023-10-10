@@ -24,7 +24,7 @@ const CreateRecipe = () => {
         console.log(acceptedFiles);
     }, [])
 
-    const [image, setImage] = useState('asds');
+    const [image, setImage] = useState('');
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
     const [editorState, setEditorState] = useState(EditorState.createEmpty());
