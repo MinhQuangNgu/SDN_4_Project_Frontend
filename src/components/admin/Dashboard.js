@@ -135,14 +135,14 @@ const Dashboard = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {dashboard?.newUser?.map(item => 
-                                <tr key={item?._id + "newUser"}>
-                                    <td><input className="form-check-input" type="checkbox" /></td>
-                                    <td>{moment(item?.createdAt).fromNow()}</td>
-                                    <td>{item?.email}</td>
-                                    <td>{item?.role}</td>
-                                    <td><button className="btn btn-sm btn-primary" href="">Khóa</button></td>
-                                </tr>)}
+                                {dashboard?.newUser?.map(item =>
+                                    <tr key={item?._id + "newUser"}>
+                                        <td><input className="form-check-input" type="checkbox" /></td>
+                                        <td>{moment(item?.createdAt).fromNow()}</td>
+                                        <td>{item?.email}</td>
+                                        <td>{item?.role}</td>
+                                        <td><button className="btn btn-sm btn-primary" href="">Khóa</button></td>
+                                    </tr>)}
                             </tbody>
                         </table>
                     </div>
@@ -165,41 +165,14 @@ const Dashboard = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
+                                {dashboard?.newRecipe?.map(item => 
+                                <tr key={item?._id + "dashboard"}>
                                     <td><input className="form-check-input" type="checkbox" /></td>
-                                    <td>01 Jan 2045</td>
-                                    <td>INV-0123</td>
+                                    <td>{moment(item?.createdAt).fromNow()}</td>
+                                    <td>{item?.name}</td>
                                     <td>Jhon Doe</td>
                                     <td><button className="btn btn-sm btn-primary" href="">Khóa</button></td>
-                                </tr>
-                                <tr>
-                                    <td><input className="form-check-input" type="checkbox" /></td>
-                                    <td>01 Jan 2045</td>
-                                    <td>INV-0123</td>
-                                    <td>Jhon Doe</td>
-                                    <td><button className="btn btn-sm btn-primary" href="">Khóa</button></td>
-                                </tr>
-                                <tr>
-                                    <td><input className="form-check-input" type="checkbox" /></td>
-                                    <td>01 Jan 2045</td>
-                                    <td>INV-0123</td>
-                                    <td>Jhon Doe</td>
-                                    <td><button className="btn btn-sm btn-primary" href="">Khóa</button></td>
-                                </tr>
-                                <tr>
-                                    <td><input className="form-check-input" type="checkbox" /></td>
-                                    <td>01 Jan 2045</td>
-                                    <td>INV-0123</td>
-                                    <td>Jhon Doe</td>
-                                    <td><button className="btn btn-sm btn-primary" href="">Khóa</button></td>
-                                </tr>
-                                <tr>
-                                    <td><input className="form-check-input" type="checkbox" /></td>
-                                    <td>01 Jan 2045</td>
-                                    <td>INV-0123</td>
-                                    <td>Jhon Doe</td>
-                                    <td><button className="btn btn-sm btn-primary" href="">Khóa</button></td>
-                                </tr>
+                                </tr>)}
                             </tbody>
                         </table>
                     </div>
