@@ -12,6 +12,7 @@ import {
 } from "draft-js";
 import { redirect, useNavigate } from 'react-router-dom';
 import CreatableSelect from 'react-select/creatable';
+import Swal from 'sweetalert2';
 const CreateRecipe = () => {
     const [recipe_name, setRecipe_name] = useState('')
     const [recipe_introduction, setRecipe_introduction] = useState('')
@@ -20,11 +21,15 @@ const CreateRecipe = () => {
 
     const navigate = useNavigate();
 
+    const [image, setImage] = useState('');
+    const imageRef = useRef();
     const onDrop = useCallback(acceptedFiles => {
-        console.log(acceptedFiles);
+        const file = acceptedFiles[0];
+        const url = URL.createObjectURL(acceptedFiles[0]);
+        setImage(url);
+        imageRef.current = file;
     }, [])
 
-    const [image, setImage] = useState('');
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
     const [editorState, setEditorState] = useState(EditorState.createEmpty());
@@ -75,9 +80,51 @@ const CreateRecipe = () => {
         navigate(-1);
     }
     const handleSubmitRecipe = async () => {
-        console.log(recipe_name + recipe_introduction + recipe_details);
-        await axios.post(`http://localhost:5000/recipe`, { name: recipe_name, introduction: recipe_introduction, recipes: recipe_details })
-        navigate("/recipe/myrecipe")
+        try {
+            let urlImage = '';
+            if (imageRef.current) {
+                const formData = new FormData();
+                formData.append("file", imageRef.current);
+                formData.append("upload_preset", "sttruyenxyz");
+                try {
+                    const res = await axios.post(
+                        "https://api.cloudinary.com/v1_1/sttruyen/image/upload",
+                        formData
+                    );
+                    urlImage = "https:" + res.data.url.split(":")[1];
+                } catch (err) {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: err?.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                    return;
+                }
+            }
+            const token = localStorage.getItem('token');
+            const data = await axios.post(`http://localhost:5000/recipe`,
+                {
+                    name: recipe_name, introduction: recipe_introduction,
+                    recipes: recipe_details,
+                    tags:[
+                        {
+                            k:"image",
+                            v:urlImage
+                        }
+                    ]
+                }, {
+                headers: {
+                    authorization: `Bearer ${token}`
+                }
+            })
+            navigate("/recipe/myrecipe")
+        }
+        catch (err) {
+
+        }
+
 
     }
 
