@@ -13,6 +13,10 @@ import TableRecipe from "../components/recipe/tableRecipe";
 
 export const publicRouter = [
 	{
+		element: TableRecipe,
+		path: "/recipe/myrecipe",
+	},
+	{
 		element: Home,
 		path: "/",
 		layout: Publiclayout,
