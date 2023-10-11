@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useRef } from 'react'
+import React, { useCallback, useState, useRef, useEffect } from 'react'
 import './style.scss'
 import { Editor } from "react-draft-wysiwyg";
 import { useDropzone } from 'react-dropzone'
@@ -13,16 +13,21 @@ import {
 import { redirect, useNavigate } from 'react-router-dom';
 import CreatableSelect from 'react-select/creatable';
 import Swal from 'sweetalert2';
+
 const CreateRecipe = () => {
     const [recipe_name, setRecipe_name] = useState('')
     const [recipe_introduction, setRecipe_introduction] = useState('')
-    console.log(recipe_introduction);
-    console.log(recipe_name);
-
+    const [isLoading, setIsLoading] = useState(false);
+    const [options, setOptions] = useState([]);
+    const [value, setValue] = useState('');
     const navigate = useNavigate();
 
     const [image, setImage] = useState('');
     const imageRef = useRef();
+    const createOption = (value) => ({
+        label: value,
+        value: value.toLowerCase().replace(/\W/g, ''),
+    });
     const onDrop = useCallback(acceptedFiles => {
         const file = acceptedFiles[0];
         const url = URL.createObjectURL(acceptedFiles[0]);
@@ -34,7 +39,6 @@ const CreateRecipe = () => {
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
     const [editorState, setEditorState] = useState(EditorState.createEmpty());
     const recipe_details = editorState.getCurrentContent().getPlainText();
-    console.log(editorState.getCurrentContent().getPlainText());
     const handleChange = (data) => {
         setEditorState(data);
     };
@@ -76,6 +80,28 @@ const CreateRecipe = () => {
             //     });
         });
     };
+
+    useEffect(() => {
+        axios.get('http://localhost:5000/recipe/common').then((response) => {
+
+            setOptions(response.data);
+        });
+    }, [])
+    const handleCreate = (inputValue) => {
+        setIsLoading(true);
+        setTimeout(() => {
+            const newOption = createOption(inputValue);
+            setIsLoading(false);
+            axios.post(
+            "http://localhost:5000/recipe/common",{
+                key:"country",
+                label: inputValue,
+                value: inputValue,
+            })
+            setOptions((prev) => [...prev, newOption]);
+            setValue(newOption);
+        }, 1000);
+    }
     const handleBackPage = () => {
         navigate(-1);
     }
@@ -108,10 +134,16 @@ const CreateRecipe = () => {
                 {
                     name: recipe_name, introduction: recipe_introduction,
                     recipes: recipe_details,
-                    tags:[
+                    tags: [
                         {
-                            k:"image",
-                            v:urlImage
+                            k: "image",
+                            v: urlImage,
+                            
+                        },
+                        {
+                            k: "country",
+                            v: value.value,
+                            
                         }
                     ]
                 }, {
@@ -172,7 +204,14 @@ const CreateRecipe = () => {
                 </div>
                 <div className='create_form-2'>
                     <div style={{ margin: "10px 0" }} class="form-holder active w-100">
-                        <CreatableSelect isClearable placeholder="Chọn quốc gia" options={colourOptions} />
+                        <CreatableSelect onChange={(newValue) => setValue(newValue)}
+                            isClearable
+                            isLoading={isLoading}
+                            onCreateOption={handleCreate}
+                            options={options}
+                            value={value}
+                            placeholder="Chọn quốc gia"
+                        />
                     </div>
                 </div>
                 <div className='recipe_create'>
