@@ -54,9 +54,9 @@ const Profile = () => {
                 }
             })
                 .then(res => {
-                    setUser(res.data?.user);
+                    
                     let userTag = {};
-                    if(res.data?.user.your_following){
+                    if (res.data?.user?.your_following) {
                         followingRef.current = res.data?.user.your_following.includes(slug);
                     }
                     res.data?.user?.tags?.forEach(item => {
@@ -65,9 +65,23 @@ const Profile = () => {
                             [item?.k]: item?.v
                         }
                     })
+                    res.data.user.followings = res.data?.user?.followings.map(item => {
+                        let tempTag = {};
+                        item?.tags?.forEach(item => {
+                            tempTag = {
+                                ...tempTag,
+                                [item?.k]: item?.v
+                            }
+                        })
+                        return {
+                            ...item,
+                            tags:tempTag
+                        }
+                    })
                     setUserTagObj({
                         ...userTag
                     });
+                    setUser(res.data.user);
                     setImage(userTag?.image)
                 })
                 .catch(err => {
@@ -335,7 +349,8 @@ const Profile = () => {
                                             <RecipeCard imageHeight={200} />
                                         </div>
                                     </div> : <div className='row'>
-                                        <div style={{ marginBottom: "20px" }} className="col-xl-6 col-lg-6 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                                        {user?.followings?.map(item => 
+                                        <div key={item?._id + "fowllowing"} style={{ marginBottom: "20px" }} className="col-xl-6 col-lg-6 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
                                             <section style={{ backgroundColor: "#9de2ff", height: "250px", borderRadius: "30px" }}>
                                                 <div className="container custom_py-5 h-100">
                                                     <div className="row d-flex align-items-center">
@@ -344,22 +359,22 @@ const Profile = () => {
                                                                 <div style={{ height: "150px" }} className="card-body p-4">
                                                                     <div className="d-flex text-black">
                                                                         <div className="flex-shrink-0">
-                                                                            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"
+                                                                            <img src={item?.tags?.image ? item?.tags?.image : "https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"}
                                                                                 alt="Generic placeholder image" className="img-fluid"
                                                                                 style={{ width: "100px", height: "80px", objectFit: "cover" }} />
                                                                         </div>
                                                                         <div className="flex-grow-1 ms-3">
-                                                                            <h5 className="mb-1">Danny McLoan</h5>
-                                                                            <p className="mb-2 pb-1" style={{ color: "#2b2a2a" }}>Senior Journalist</p>
+                                                                            <h5 className="mb-1">{item?.name}</h5>
+                                                                            <p className="mb-2 pb-1" style={{ color: "#2b2a2a" }}>{item?.ownerRecipes?.length > 0 ? "Chief" : "User"}</p>
                                                                             <div className="d-flex justify-content-start rounded-3 p-2 mb-2"
                                                                                 style={{ backgroundColor: "#efefef" }}>
                                                                                 <div>
-                                                                                    <p className="small text-muted mb-1">Articles</p>
-                                                                                    <p className="mb-0">41</p>
+                                                                                    <p className="small text-muted mb-1">Recipes</p>
+                                                                                    <p className="mb-0">{item?.ownerRecipes?.length}</p>
                                                                                 </div>
                                                                                 <div className="px-3">
                                                                                     <p className="small text-muted mb-1">Followers</p>
-                                                                                    <p className="mb-0">976</p>
+                                                                                    <p className="mb-0">{item?.followers?.length}</p>
                                                                                 </div>
                                                                             </div>
                                                                             <div className="d-flex pt-1">
@@ -373,124 +388,7 @@ const Profile = () => {
                                                     </div>
                                                 </div>
                                             </section>
-                                        </div>
-                                        <div style={{ marginBottom: "20px" }} className="col-xl-6 col-lg-6 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                                            <section style={{ backgroundColor: "#9de2ff", height: "250px", borderRadius: "30px" }}>
-                                                <div className="container custom_py-5 h-100">
-                                                    <div className="row d-flex align-items-center">
-                                                        <div className="col col-md-9 col-lg-7 col-xl-5">
-                                                            <div className="card" style={{ borderRadius: "15px" }}>
-                                                                <div style={{ height: "150px" }} className="card-body p-4">
-                                                                    <div className="d-flex text-black">
-                                                                        <div className="flex-shrink-0">
-                                                                            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"
-                                                                                alt="Generic placeholder image" className="img-fluid"
-                                                                                style={{ width: "100px", height: "80px", objectFit: "cover" }} />
-                                                                        </div>
-                                                                        <div className="flex-grow-1 ms-3">
-                                                                            <h5 className="mb-1">Danny McLoan</h5>
-                                                                            <p className="mb-2 pb-1" style={{ color: "#2b2a2a" }}>Senior Journalist</p>
-                                                                            <div className="d-flex justify-content-start rounded-3 p-2 mb-2"
-                                                                                style={{ backgroundColor: "#efefef" }}>
-                                                                                <div>
-                                                                                    <p className="small text-muted mb-1">Articles</p>
-                                                                                    <p className="mb-0">41</p>
-                                                                                </div>
-                                                                                <div className="px-3">
-                                                                                    <p className="small text-muted mb-1">Followers</p>
-                                                                                    <p className="mb-0">976</p>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div className="d-flex pt-1">
-                                                                                <button type="button" className="btn btn-primary flex-grow-1">Theo dõi</button>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </section>
-                                        </div>
-                                        <div style={{ marginBottom: "20px" }} className="col-xl-6 col-lg-6 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                                            <section style={{ backgroundColor: "#9de2ff", height: "250px", borderRadius: "30px" }}>
-                                                <div className="container custom_py-5 h-100">
-                                                    <div className="row d-flex align-items-center">
-                                                        <div className="col col-md-9 col-lg-7 col-xl-5">
-                                                            <div className="card" style={{ borderRadius: "15px" }}>
-                                                                <div style={{ height: "150px" }} className="card-body p-4">
-                                                                    <div className="d-flex text-black">
-                                                                        <div className="flex-shrink-0">
-                                                                            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"
-                                                                                alt="Generic placeholder image" className="img-fluid"
-                                                                                style={{ width: "100px", height: "80px", objectFit: "cover" }} />
-                                                                        </div>
-                                                                        <div className="flex-grow-1 ms-3">
-                                                                            <h5 className="mb-1">Danny McLoan</h5>
-                                                                            <p className="mb-2 pb-1" style={{ color: "#2b2a2a" }}>Senior Journalist</p>
-                                                                            <div className="d-flex justify-content-start rounded-3 p-2 mb-2"
-                                                                                style={{ backgroundColor: "#efefef" }}>
-                                                                                <div>
-                                                                                    <p className="small text-muted mb-1">Articles</p>
-                                                                                    <p className="mb-0">41</p>
-                                                                                </div>
-                                                                                <div className="px-3">
-                                                                                    <p className="small text-muted mb-1">Followers</p>
-                                                                                    <p className="mb-0">976</p>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div className="d-flex pt-1">
-                                                                                <button type="button" className="btn btn-primary flex-grow-1">Theo dõi</button>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </section>
-                                        </div>
-                                        <div style={{ marginBottom: "20px" }} className="col-xl-6 col-lg-6 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                                            <section style={{ backgroundColor: "#9de2ff", height: "250px", borderRadius: "30px" }}>
-                                                <div className="container custom_py-5 h-100">
-                                                    <div className="row d-flex align-items-center">
-                                                        <div className="col col-md-9 col-lg-7 col-xl-5">
-                                                            <div className="card" style={{ borderRadius: "15px" }}>
-                                                                <div style={{ height: "150px" }} className="card-body p-4">
-                                                                    <div className="d-flex text-black">
-                                                                        <div className="flex-shrink-0">
-                                                                            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"
-                                                                                alt="Generic placeholder image" className="img-fluid"
-                                                                                style={{ width: "100px", height: "80px", objectFit: "cover" }} />
-                                                                        </div>
-                                                                        <div className="flex-grow-1 ms-3">
-                                                                            <h5 className="mb-1">Danny McLoan</h5>
-                                                                            <p className="mb-2 pb-1" style={{ color: "#2b2a2a" }}>Senior Journalist</p>
-                                                                            <div className="d-flex justify-content-start rounded-3 p-2 mb-2"
-                                                                                style={{ backgroundColor: "#efefef" }}>
-                                                                                <div>
-                                                                                    <p className="small text-muted mb-1">Articles</p>
-                                                                                    <p className="mb-0">41</p>
-                                                                                </div>
-                                                                                <div className="px-3">
-                                                                                    <p className="small text-muted mb-1">Followers</p>
-                                                                                    <p className="mb-0">976</p>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div className="d-flex pt-1">
-                                                                                <button type="button" className="btn btn-primary flex-grow-1">Theo dõi</button>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </section>
-                                        </div>
+                                        </div>)}
                                     </div>}
                             </div>
                         </div>
