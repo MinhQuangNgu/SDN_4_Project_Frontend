@@ -15,7 +15,9 @@ import CreatableSelect from 'react-select/creatable';
 import Swal from 'sweetalert2';
 
 const CreateRecipe = () => {
-    const [recipe_name, setRecipe_name] = useState('')
+        const [recipe_name, setRecipe_name] = useState('')
+    const [isRecipeNameValid, setIsRecipeNameValid] = useState(true);
+    const [isRecipe, setIsRecipe] = useState(true);
     const [recipe_introduction, setRecipe_introduction] = useState('')
     const [isLoading, setIsLoading] = useState(false);
     const [options, setOptions] = useState([]);
@@ -47,8 +49,8 @@ const CreateRecipe = () => {
             uploadCallback(file)
                 .then((response) => {
                     // setUploadImage(true);
-                    resolve({ data: { link: response.data.link } });
-                })
+                                        resolve({ data: { link: response.data.link } });
+                                    })
                 .catch((error) => {
                     reject(error);
                 });
@@ -93,8 +95,8 @@ const CreateRecipe = () => {
             const newOption = createOption(inputValue);
             setIsLoading(false);
             axios.post(
-            "http://localhost:5000/recipe/common",{
-                key:"country",
+                "http://localhost:5000/recipe/common", {
+                key: "country",
                 label: inputValue,
                 value: inputValue,
             })
@@ -106,6 +108,15 @@ const CreateRecipe = () => {
         navigate(-1);
     }
     const handleSubmitRecipe = async () => {
+        if (recipe_name.trim() === '') {
+            setIsRecipeNameValid(false);
+            return;
+        }
+        const contentState = editorState.getCurrentContent();
+        if (!contentState.hasText()) {
+            setIsRecipe(false);
+            return;
+        }
         try {
             let urlImage = '';
             if (imageRef.current) {
@@ -138,12 +149,12 @@ const CreateRecipe = () => {
                         {
                             k: "image",
                             v: urlImage,
-                            
+
                         },
                         {
                             k: "country",
                             v: value.value,
-                            
+
                         }
                     ]
                 }, {
@@ -195,7 +206,7 @@ const CreateRecipe = () => {
                     <div style={{ width: "400px" }} className='create_form' action="">
                         <h3 style={{ marginBottom: "30px" }}>Tạo công thức</h3>
                         <div class="form-holder active w-100">
-                            <textarea style={{ width: "100%", minHeight: "100px" }} type="text" placeholder="Tên món ăn" class="form-control" onChange={e => setRecipe_name(e.target.value)} />
+                            <textarea style={{ width: "100%", minHeight: "100px" }} type="text" placeholder="Tên món ăn" class={`form-control ${!isRecipeNameValid ? 'invalid' : ''}`} onChange={e => { setRecipe_name(e.target.value); setIsRecipeNameValid(true) }} />
                         </div>
                         <div class="form-holder active">
                             <textarea style={{ width: "100%", minHeight: "200px" }} type="text" placeholder="Giới thiệu món ăn" class="form-control" onChange={e => setRecipe_introduction(e.target.value)} />
@@ -216,7 +227,7 @@ const CreateRecipe = () => {
                 </div>
                 <div className='recipe_create'>
                     <h3 style={{ marginTop: "20px" }}>Công thức</h3>
-                    <div className='recipe_create_edit'>
+                    <div className={`recipe_create_edit ${!isRecipe ? 'invalid  ' : ''}`}>
                         <Editor
                             editorState={editorState}
                             onEditorStateChange={handleChange}
