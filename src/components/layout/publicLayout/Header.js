@@ -6,36 +6,23 @@ const Header = () => {
   const [wasLogin, setWasLogin] = useState(true);
   const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')));
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
   // localStorage.removeItem('token');
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
   const handleLogout = () => {
-    console.log(12345);
+    localStorage.removeItem('token');
     localStorage.removeItem('user');
-
-    setWasLogin(true)
-    const [user, setUser] = useState(null);
-    const [isOpen, setIsOpen] = useState(false);
-    const navigate = useNavigate();
-
-    const toggleMenu = () => {
-      setIsOpen(!isOpen);
-    };
-
-    const handleLogout = () => {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      setWasLogin(false);
-      Swal.fire({
-        position: 'top-end',
-        icon: 'success',
-        title: 'Đăng xuất thành công.',
-        showConfirmButton: false,
-        timer: 1500
-      })
-      navigate('/');
-    }
+    setWasLogin(false);
+    Swal.fire({
+      position: 'top-end',
+      icon: 'success',
+      title: 'Đăng xuất thành công.',
+      showConfirmButton: false,
+      timer: 1500
+    })
+    navigate('/');
   }
 
   useEffect(() => {
@@ -52,11 +39,11 @@ const Header = () => {
       console.log(JSON.parse(localStorage.getItem('user')));
       setUser(JSON.parse(localStorage.getItem('user')))
     }
-    setWasLogin(window.localStorage.getItem('token') != null);
+    // setWasLogin(window.localStorage.getItem('token') != null);
     setWasLogin(window.localStorage.getItem('user') == null);
     console.log(wasLogin);
     setUser(window.localStorage.getItem('user') ? JSON.parse(window.localStorage.getItem('user')) : null);
-  }, []);
+  });
 
   return (
     <>
