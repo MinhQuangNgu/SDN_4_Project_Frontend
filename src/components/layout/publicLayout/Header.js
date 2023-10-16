@@ -63,7 +63,7 @@ const Header = () => {
               <Link style={{ textDecoration: "none", color: "black" }} className="btn-sm-square bg-white rounded-circle ms-3" to='/'>
                 <i className="fa-solid fa-house"></i>
               </Link>
-              <Link style={{ textDecoration: "none", color: "black" }} className="btn-sm-square bg-white rounded-circle ms-3" to='/search'>
+              <Link style={{ textDecoration: "none", color: "black" }} className="btn-sm-square bg-white rounded-circle ms-3" to='/recipe/search'>
                 <small className="fa fa-search text-body"></small>
               </Link>
               <Link style={{ textDecoration: "none", color: "black" }} className="btn-sm-square bg-white rounded-circle ms-3" to='/minhquang/profile'>

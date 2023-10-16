@@ -53,7 +53,7 @@ export const publicRouter = [
 	},
 	{
 		element: Searching,
-		path: "/search",
+		path: "/recipe/search",
 		layout: Publiclayout,
 	},
 	{
