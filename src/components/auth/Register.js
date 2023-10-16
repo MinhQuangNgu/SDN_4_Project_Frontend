@@ -41,7 +41,7 @@ const Register = () => {
 
             }
 
-            let res = await axios.post(`http://localhost:5000/user/register`, body);
+            let res = await axios.post(`/user/register`, body);
             const { statusCode, success, data, token } = res.data.data
             if (success == true) {
                 Swal.fire({
@@ -52,6 +52,7 @@ const Register = () => {
                     timer: 1500
                 })
                 localStorage.setItem("token", token)
+                localStorage.setItem("user", JSON.stringify(data));
                 navigate('/')
             }
             else {

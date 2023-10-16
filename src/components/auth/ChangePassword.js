@@ -21,7 +21,7 @@ const ChangePassword = () => {
           'Authorization': `Bearer ${token}`
         }
       }
-      const res = await axios.put(`http://localhost:5000/user/${id}`, body, tk);
+      const res = await axios.put(`/user/${id}`, body, tk);
       console.log(res);
       const { success } = res.data.data;
       if (success == true) {

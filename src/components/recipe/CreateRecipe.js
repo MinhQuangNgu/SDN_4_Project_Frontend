@@ -1,7 +1,8 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useState, useRef, useEffect } from 'react'
 import './style.scss'
 import { Editor } from "react-draft-wysiwyg";
 import { useDropzone } from 'react-dropzone'
+import axios from 'axios';
 import {
     EditorState,
     ContentState,
@@ -9,20 +10,37 @@ import {
     Modifier,
     convertFromHTML,
 } from "draft-js";
-import {useNavigate} from 'react-router-dom';
+import { redirect, useNavigate } from 'react-router-dom';
+import CreatableSelect from 'react-select/creatable';
+import Swal from 'sweetalert2';
+
 const CreateRecipe = () => {
-
-
+        const [recipe_name, setRecipe_name] = useState('')
+    const [isRecipeNameValid, setIsRecipeNameValid] = useState(true);
+    const [isRecipe, setIsRecipe] = useState(true);
+    const [recipe_introduction, setRecipe_introduction] = useState('')
+    const [isLoading, setIsLoading] = useState(false);
+    const [options, setOptions] = useState([]);
+    const [value, setValue] = useState('');
     const navigate = useNavigate();
 
+    const [image, setImage] = useState('');
+    const imageRef = useRef();
+    const createOption = (value) => ({
+        label: value,
+        value: value.toLowerCase().replace(/\W/g, ''),
+    });
     const onDrop = useCallback(acceptedFiles => {
-        console.log(acceptedFiles);
+        const file = acceptedFiles[0];
+        const url = URL.createObjectURL(acceptedFiles[0]);
+        setImage(url);
+        imageRef.current = file;
     }, [])
 
-    const [image,setImage] = useState('asds');
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
     const [editorState, setEditorState] = useState(EditorState.createEmpty());
+    const recipe_details = editorState.getCurrentContent().getPlainText();
     const handleChange = (data) => {
         setEditorState(data);
     };
@@ -31,8 +49,8 @@ const CreateRecipe = () => {
             uploadCallback(file)
                 .then((response) => {
                     // setUploadImage(true);
-                    resolve({ data: { link: response.data.link } });
-                })
+                                        resolve({ data: { link: response.data.link } });
+                                    })
                 .catch((error) => {
                     reject(error);
                 });
@@ -64,9 +82,102 @@ const CreateRecipe = () => {
             //     });
         });
     };
+
+    useEffect(() => {
+        axios.get('http://localhost:5000/recipe/common').then((response) => {
+
+            setOptions(response.data);
+        });
+    }, [])
+    const handleCreate = (inputValue) => {
+        setIsLoading(true);
+        setTimeout(() => {
+            const newOption = createOption(inputValue);
+            setIsLoading(false);
+            axios.post(
+                "http://localhost:5000/recipe/common", {
+                key: "country",
+                label: inputValue,
+                value: inputValue,
+            })
+            setOptions((prev) => [...prev, newOption]);
+            setValue(newOption);
+        }, 1000);
+    }
     const handleBackPage = () => {
         navigate(-1);
     }
+    const handleSubmitRecipe = async () => {
+        if (recipe_name.trim() === '') {
+            setIsRecipeNameValid(false);
+            return;
+        }
+        const contentState = editorState.getCurrentContent();
+        if (!contentState.hasText()) {
+            setIsRecipe(false);
+            return;
+        }
+        try {
+            let urlImage = '';
+            if (imageRef.current) {
+                const formData = new FormData();
+                formData.append("file", imageRef.current);
+                formData.append("upload_preset", "sttruyenxyz");
+                try {
+                    const res = await axios.post(
+                        "https://api.cloudinary.com/v1_1/sttruyen/image/upload",
+                        formData
+                    );
+                    urlImage = "https:" + res.data.url.split(":")[1];
+                } catch (err) {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: err?.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                    return;
+                }
+            }
+            const token = localStorage.getItem('token');
+            const data = await axios.post(`http://localhost:5000/recipe`,
+                {
+                    name: recipe_name, introduction: recipe_introduction,
+                    recipes: recipe_details,
+                    tags: [
+                        {
+                            k: "image",
+                            v: urlImage,
+
+                        },
+                        {
+                            k: "country",
+                            v: value.value,
+
+                        }
+                    ]
+                }, {
+                headers: {
+                    authorization: `Bearer ${token}`
+                }
+            })
+            navigate("/recipe/myrecipe")
+        }
+        catch (err) {
+
+        }
+
+
+    }
+
+
+    const [colourOptions, setColourOptions] = useState([
+        { value: 'red', label: 'Red' },
+        { value: 'blue', label: 'Blue' },
+        { value: 'green', label: 'Green' },
+        { value: 'yellow', label: 'Yellow' }
+    ])
     return (
         <div className='create_recipe_container'>
             <div class="wrapper">
@@ -88,23 +199,35 @@ const CreateRecipe = () => {
                                         </i>
                                     </div>
                                 </div> :
-                                <img style={{ width: "400px", height: "500px", objectFit: "cover" }} src="https://res.cloudinary.com/sttruyen/image/upload/v1694748169/gwrobojgvpbfyejhb40j.jpg" alt="" />
+                                    <img style={{ width: "400px", height: "500px", objectFit: "cover" }} src="https://res.cloudinary.com/sttruyen/image/upload/v1694748169/gwrobojgvpbfyejhb40j.jpg" alt="" />
                             }
                         </div>
                     </div>
                     <div style={{ width: "400px" }} className='create_form' action="">
                         <h3 style={{ marginBottom: "30px" }}>Tạo công thức</h3>
                         <div class="form-holder active w-100">
-                            <textarea style={{ width: "100%", minHeight: "100px" }} type="text" placeholder="Tên món ăn" class="form-control" />
+                            <textarea style={{ width: "100%", minHeight: "100px" }} type="text" placeholder="Tên món ăn" class={`form-control ${!isRecipeNameValid ? 'invalid' : ''}`} onChange={e => { setRecipe_name(e.target.value); setIsRecipeNameValid(true) }} />
                         </div>
                         <div class="form-holder active">
-                            <textarea style={{ width: "100%", minHeight: "200px" }} type="text" placeholder="Giới thiệu món ăn" class="form-control" />
+                            <textarea style={{ width: "100%", minHeight: "200px" }} type="text" placeholder="Giới thiệu món ăn" class="form-control" onChange={e => setRecipe_introduction(e.target.value)} />
                         </div>
+                    </div>
+                </div>
+                <div className='create_form-2'>
+                    <div style={{ margin: "10px 0" }} class="form-holder active w-100">
+                        <CreatableSelect onChange={(newValue) => setValue(newValue)}
+                            isClearable
+                            isLoading={isLoading}
+                            onCreateOption={handleCreate}
+                            options={options}
+                            value={value}
+                            placeholder="Chọn quốc gia"
+                        />
                     </div>
                 </div>
                 <div className='recipe_create'>
                     <h3 style={{ marginTop: "20px" }}>Công thức</h3>
-                    <div className='recipe_create_edit'>
+                    <div className={`recipe_create_edit ${!isRecipe ? 'invalid  ' : ''}`}>
                         <Editor
                             editorState={editorState}
                             onEditorStateChange={handleChange}
@@ -138,13 +261,13 @@ const CreateRecipe = () => {
                             }}
                         />
                     </div>
-                    <div style={{ marginTop: "30px", marginBottom: "20px" }} className='d-flex justify-content-center'>
+                    <div style={{ marginTop: "30px", marginBottom: "20px" }} className='d-flex justify-content-center' onClick={handleSubmitRecipe}>
                         <button>Tạo mới</button>
                     </div>
                 </div>
             </div>
             <div className='back_button'>
-                <button onClick={handleBackPage}> <i style={{marginRight:"10px"}} className="fa-solid fa-arrow-left"></i>Quay lại</button>
+                <button onClick={handleBackPage}> <i style={{ marginRight: "10px" }} className="fa-solid fa-arrow-left"></i>Quay lại</button>
             </div>
         </div>
     )

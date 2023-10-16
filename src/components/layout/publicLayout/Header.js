@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import './style.scss'
+import Swal from 'sweetalert2';
 const Header = () => {
   const [wasLogin, setWasLogin] = useState(true);
   const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')));
@@ -11,8 +13,29 @@ const Header = () => {
   const handleLogout = () => {
     console.log(12345);
     localStorage.removeItem('user');
-    
+
     setWasLogin(true)
+    const [user, setUser] = useState(null);
+    const [isOpen, setIsOpen] = useState(false);
+    const navigate = useNavigate();
+
+    const toggleMenu = () => {
+      setIsOpen(!isOpen);
+    };
+
+    const handleLogout = () => {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      setWasLogin(false);
+      Swal.fire({
+        position: 'top-end',
+        icon: 'success',
+        title: 'Đăng xuất thành công.',
+        showConfirmButton: false,
+        timer: 1500
+      })
+      navigate('/');
+    }
   }
 
   useEffect(() => {
@@ -22,7 +45,7 @@ const Header = () => {
     const rawData = urlParams.get('data');
     let data;
     if (rawData) {
-      data =  JSON.parse(decodeURIComponent(rawData));
+      data = JSON.parse(decodeURIComponent(rawData));
       // localStorage.setItem("token", data.token)
       console.log(typeof data);
       localStorage.setItem("user", JSON.stringify(data.user));
@@ -32,7 +55,9 @@ const Header = () => {
     setWasLogin(window.localStorage.getItem('token') != null);
     setWasLogin(window.localStorage.getItem('user') == null);
     console.log(wasLogin);
+    setUser(window.localStorage.getItem('user') ? JSON.parse(window.localStorage.getItem('user')) : null);
   }, []);
+
   return (
     <>
       <div style={{ backgroundColor: "#E1E4EB" }} className="container-fluid fixed-top px-0 wow fadeIn" data-wow-delay="0.1s">
@@ -65,7 +90,7 @@ const Header = () => {
               <Link style={{ textDecoration: "none", color: "black" }} className="btn-sm-square bg-white rounded-circle ms-3" to='/'>
                 <i className="fa-solid fa-house"></i>
               </Link>
-              <Link style={{ textDecoration: "none", color: "black" }} className="btn-sm-square bg-white rounded-circle ms-3" to='/search'>
+              <Link style={{ textDecoration: "none", color: "black" }} className="btn-sm-square bg-white rounded-circle ms-3" to='/recipe/search'>
                 <small className="fa fa-search text-body"></small>
               </Link>
               <Link style={{ textDecoration: "none", color: "black" }} className="btn-sm-square bg-white rounded-circle ms-3" to='/minhquang/profile'>
@@ -75,43 +100,43 @@ const Header = () => {
                 <Link style={{ textDecoration: "none", color: "black", padding: "0 10px", borderRadius: "20px", paddingTop: "2.5px" }} className=" bg-white ms-3" to='/login'>
                   <small className="text-body">Đăng nhập</small>
                 </Link> :
-                <Link
-                  style={{ textDecoration: 'none', color: 'black' }}
+                <div
+                  style={{ textDecoration: 'none', color: 'black', cursor: "pointer" }}
                   className="btn-sm-square bg-white rounded-circle ms-3 position-relative"
-                  to="/"
                   onClick={toggleMenu}
                 >
                   <small className="fa fa-user text-body"></small>
-                  {isOpen && user && (
-                    <div className="btn-group position-absolute top-100 mt-1 " style={{ width: '400px' }}>
-                      <div style={{ backgroundColor: 'white', padding: '5px', borderRadius: '10px', width: '265px' }}>
-                        <span className="ms-3" style={{ marginLeft: 0, color: "blue" }}>{user.name}</span> <hr />
-                        <table class="table table-hover">
-                          <tbody>
-                            <tr>
-                              <td onClick={handleLogout} > <i class="fa-solid fa-arrow-right-from-bracket"></i> <span style={{ marginLeft: '15px' }}>Logout</span>  </td>
-                            </tr>
-                            <tr>
-                              <td><i class="fa fa-id-card" aria-hidden="true"></i> <span style={{ marginLeft: '15px' }}>Dashboard</span></td>
-                            </tr>
-                          </tbody>
-                        </table>
+                  {
+                    isOpen && user && (
+                      <div className="btn-group position-absolute top-100 mt-1 " style={{ width: '400px' }}>
+                        <div style={{ backgroundColor: 'white', padding: '5px', borderRadius: '10px', width: '265px' }}>
+                          <span className="ms-3" style={{ marginLeft: 0, color: "blue" }}>{user.name}</span> <hr />
+                          <table class="table table-hover">
+                            <tbody>
+                              <tr>
+                                <td onClick={handleLogout} > <i class="fa-solid fa-arrow-right-from-bracket"></i> <span style={{ marginLeft: '15px' }}>Logout</span>  </td>
+                              </tr>
+                              <tr>
+                                <td><i class="fa fa-id-card" aria-hidden="true"></i> <span style={{ marginLeft: '15px' }}>Dashboard</span></td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+
                       </div>
-
-                    </div>
-                  )}
-                </Link>
-
-
+                    )
+                  }
+                  </div>
               }
 
-
-            </div>
-          </div>
+                </div >
+          </div >
+          
         </nav >
       </div >
     </>
   )
 }
+
 
 export default Header

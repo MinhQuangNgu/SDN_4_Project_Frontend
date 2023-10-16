@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -8,8 +8,10 @@ import {
     Tooltip,
     Legend,
 } from "chart.js";
+import axios from 'axios';
 import { Bar } from "react-chartjs-2";
-import { Link } from 'react-router-dom';
+import Swal from 'sweetalert2'
+import moment from 'moment'
 ChartJS.register(
     CategoryScale,
     LinearScale,
@@ -19,11 +21,15 @@ ChartJS.register(
     Legend
 );
 const Dashboard = () => {
-    const date = 31;
-    const labels = Array(date)
+
+    const [dashboard, setDashboard] = useState(null)
+
+
+    let date = 31;
+    let labels = Array(date)
         .fill(1)
         .map((_, index) => index + 1);
-    const options = {
+    let options = {
         responsive: true,
         plugins: {
             legend: {
@@ -35,25 +41,46 @@ const Dashboard = () => {
             },
         },
     };
-    const data = {
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        axios.get('/admin/dashboard', {
+            headers: {
+                authorization: `Bearer ${token}`
+            }
+        })
+            .then(res => {
+                console.log(res.data);
+                setDashboard(res.data);
+            })
+            .catch(err => {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'error',
+                    title: "Error network",
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+            })
+    }, []);
+
+    let data = {
         labels,
         datasets: [
             {
                 label: "Tài khoản mới",
-                data: [
-                    200, 100, 300, 400, 200, 100, 500, 20, 40,
-                ],
+                data: dashboard?.newUserCounts || [],
                 backgroundColor: "rgba(53, 162, 235, 0.5)",
             },
             {
                 label: "Công thức mới",
-                data: [
-                    200, 20, 300, 400, 40, 100, 100, 20, 40,
-                ],
+                data: dashboard?.newRecipeCounts || [],
                 backgroundColor: "rgba(53, 162, 235, 1)",
             },
         ],
     };
+
+
     return (
         <>
 
@@ -64,7 +91,7 @@ const Dashboard = () => {
                             <i className="fa fa-chart-line fa-3x text-primary"></i>
                             <div className="ms-3">
                                 <p className="mb-2">Tổng tài khoản</p>
-                                <h6 className="mb-0">40</h6>
+                                <h6 className="mb-0">{dashboard?.totalUser}</h6>
                             </div>
                         </div>
                     </div>
@@ -73,7 +100,7 @@ const Dashboard = () => {
                             <i className="fa fa-chart-bar fa-3x text-primary"></i>
                             <div className="ms-3">
                                 <p className="mb-2">Tổng công thức</p>
-                                <h6 className="mb-0">400</h6>
+                                <h6 className="mb-0">{dashboard?.totalRecipe}</h6>
                             </div>
                         </div>
                     </div>
@@ -82,15 +109,15 @@ const Dashboard = () => {
                             <i className="fa fa-chart-area fa-3x text-primary"></i>
                             <div className="ms-3">
                                 <p className="mb-2">Tổng đầu bếp</p>
-                                <h6 className="mb-0">80</h6>
+                                <h6 className="mb-0">{dashboard?.totalChief}</h6>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div style={{ marginTop: "20px" }}>
+            {dashboard && <div style={{ marginTop: "20px" }}>
                 <Bar options={options} data={data} />
-            </div>
+            </div>}
             <div className="container-fluid pt-4 px-4">
                 <div className="bg-light text-center rounded p-4">
                     <div className="d-flex align-items-center justify-content-between mb-4">
@@ -102,47 +129,20 @@ const Dashboard = () => {
                                 <tr className="text-dark">
                                     <th scope="col"><input className="form-check-input" type="checkbox" /></th>
                                     <th scope="col">Ngày tạo</th>
-                                    <th scope="col">Tên đăng nhập</th>
+                                    <th scope="col">Email</th>
                                     <th scope="col">Vai trò</th>
                                     <th scope="col">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td><input className="form-check-input" type="checkbox" /></td>
-                                    <td>01 Jan 2045</td>
-                                    <td>INV-0123</td>
-                                    <td>Jhon Doe</td>
-                                    <td><button className="btn btn-sm btn-primary" href="">Khóa</button></td>
-                                </tr>
-                                <tr>
-                                    <td><input className="form-check-input" type="checkbox" /></td>
-                                    <td>01 Jan 2045</td>
-                                    <td>INV-0123</td>
-                                    <td>Jhon Doe</td>
-                                    <td><button className="btn btn-sm btn-primary" href="">Khóa</button></td>
-                                </tr>
-                                <tr>
-                                    <td><input className="form-check-input" type="checkbox" /></td>
-                                    <td>01 Jan 2045</td>
-                                    <td>INV-0123</td>
-                                    <td>Jhon Doe</td>
-                                    <td><button className="btn btn-sm btn-primary" href="">Khóa</button></td>
-                                </tr>
-                                <tr>
-                                    <td><input className="form-check-input" type="checkbox" /></td>
-                                    <td>01 Jan 2045</td>
-                                    <td>INV-0123</td>
-                                    <td>Jhon Doe</td>
-                                    <td><button className="btn btn-sm btn-primary" href="">Khóa</button></td>
-                                </tr>
-                                <tr>
-                                    <td><input className="form-check-input" type="checkbox" /></td>
-                                    <td>01 Jan 2045</td>
-                                    <td>INV-0123</td>
-                                    <td>Jhon Doe</td>
-                                    <td><button className="btn btn-sm btn-primary" href="">Khóa</button></td>
-                                </tr>
+                                {dashboard?.newUser?.map(item =>
+                                    <tr key={item?._id + "newUser"}>
+                                        <td><input className="form-check-input" type="checkbox" /></td>
+                                        <td>{moment(item?.createdAt).fromNow()}</td>
+                                        <td>{item?.email}</td>
+                                        <td>{item?.role}</td>
+                                        <td><button className="btn btn-sm btn-primary" href="">Khóa</button></td>
+                                    </tr>)}
                             </tbody>
                         </table>
                     </div>
@@ -165,41 +165,14 @@ const Dashboard = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
+                                {dashboard?.newRecipe?.map(item => 
+                                <tr key={item?._id + "dashboard"}>
                                     <td><input className="form-check-input" type="checkbox" /></td>
-                                    <td>01 Jan 2045</td>
-                                    <td>INV-0123</td>
+                                    <td>{moment(item?.createdAt).fromNow()}</td>
+                                    <td>{item?.name}</td>
                                     <td>Jhon Doe</td>
                                     <td><button className="btn btn-sm btn-primary" href="">Khóa</button></td>
-                                </tr>
-                                <tr>
-                                    <td><input className="form-check-input" type="checkbox" /></td>
-                                    <td>01 Jan 2045</td>
-                                    <td>INV-0123</td>
-                                    <td>Jhon Doe</td>
-                                    <td><button className="btn btn-sm btn-primary" href="">Khóa</button></td>
-                                </tr>
-                                <tr>
-                                    <td><input className="form-check-input" type="checkbox" /></td>
-                                    <td>01 Jan 2045</td>
-                                    <td>INV-0123</td>
-                                    <td>Jhon Doe</td>
-                                    <td><button className="btn btn-sm btn-primary" href="">Khóa</button></td>
-                                </tr>
-                                <tr>
-                                    <td><input className="form-check-input" type="checkbox" /></td>
-                                    <td>01 Jan 2045</td>
-                                    <td>INV-0123</td>
-                                    <td>Jhon Doe</td>
-                                    <td><button className="btn btn-sm btn-primary" href="">Khóa</button></td>
-                                </tr>
-                                <tr>
-                                    <td><input className="form-check-input" type="checkbox" /></td>
-                                    <td>01 Jan 2045</td>
-                                    <td>INV-0123</td>
-                                    <td>Jhon Doe</td>
-                                    <td><button className="btn btn-sm btn-primary" href="">Khóa</button></td>
-                                </tr>
+                                </tr>)}
                             </tbody>
                         </table>
                     </div>

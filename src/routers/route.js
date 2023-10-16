@@ -9,7 +9,13 @@ import Admin from "../components/admin/Admin";
 import CreateRecipe from "../components/recipe/CreateRecipe";
 import Forgot from "../components/auth/Forgot";
 import ChangePassword from '../components/auth/ChangePassword';
+import TableRecipe from "../components/recipe/tableRecipe";
+
 export const publicRouter = [
+	{
+		element: TableRecipe,
+		path: "/recipe/myrecipe",
+	},
 	{
 		element: Home,
 		path: "/",
@@ -47,17 +53,17 @@ export const publicRouter = [
 	},
 	{
 		element: Searching,
-		path: "/search",
+		path: "/recipe/search",
 		layout: Publiclayout,
-	}
-];
-export const adminRouter = [
+	},
 	{
 		element: Admin,
 		path: "/admin/manager/:slug"
 	}
 ];
-
+export const adminRouter = [
+	
+];
 export const userRouter = [
 
 ];
