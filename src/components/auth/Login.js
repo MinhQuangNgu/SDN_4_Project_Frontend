@@ -15,7 +15,7 @@ const Login = () => {
       password: pass
     }
     try {
-      
+
       const user = await axios.post(`http://localhost:5000/user/login`, body);
       const { statusCode, success, data, token } = user.data.data;
       if (success == true) {
@@ -33,10 +33,10 @@ const Login = () => {
         const user = JSON.parse(localStorage.getItem('user'));
         console.log(user);
         navigate('/');
-  
+
       }
       else {
-  
+
         Swal.fire({
           position: 'top-end',
           icon: 'error',
@@ -44,7 +44,7 @@ const Login = () => {
           showConfirmButton: false,
           timer: 1500
         })
-  
+
       }
     } catch (error) {
       Swal.fire({
@@ -98,10 +98,18 @@ const Login = () => {
               </div>
               <div className='w-100 d-flex justify-content-center'>
                 <div className='circle_border'>
-                  <i className="fa-brands fa-facebook-f"></i>
+                  <form action="http://localhost:5000/login/facebook" method="GET">
+                    <button type="submit" style={{ backgroundColor: 'rgba(0,0,0,0)', border: 'none', padding: '5px' }}>
+                      <i className="fa-brands fa-facebook-f"></i>
+                    </button>
+                  </form>
                 </div>
                 <div className='circle_border'>
-                  <i className="fa-brands fa-google"></i>
+                  <form action="http://localhost:5000/auth/google" method="GET">
+                    <button type="submit" style={{ backgroundColor: 'rgba(0,0,0,0)', border: 'none', padding: '5px' }}>
+                      <i className="fa-brands fa-google"></i>
+                    </button>
+                  </form>
                 </div>
               </div>
               <div className="text-center p-t-136">

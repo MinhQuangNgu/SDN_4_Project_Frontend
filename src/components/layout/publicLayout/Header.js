@@ -2,27 +2,36 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 const Header = () => {
   const [wasLogin, setWasLogin] = useState(true);
-  const data = JSON.parse(localStorage.getItem('user'));
-  const [user, setUser] = useState(data);
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')));
   const [isOpen, setIsOpen] = useState(false);
-
+  // localStorage.removeItem('token');
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
-
-  const handleLogout = () =>{
+  const handleLogout = () => {
     console.log(12345);
     localStorage.removeItem('user');
+    
     setWasLogin(true)
   }
-  useEffect(() => {
-    if (user) {
-      setWasLogin(false);
-    }
-  }, [user]);
 
   useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const success = urlParams.get('success');
+    const statusCode = urlParams.get('statusCode');
+    const rawData = urlParams.get('data');
+    let data;
+    if (rawData) {
+      data =  JSON.parse(decodeURIComponent(rawData));
+      // localStorage.setItem("token", data.token)
+      console.log(typeof data);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      console.log(JSON.parse(localStorage.getItem('user')));
+      setUser(JSON.parse(localStorage.getItem('user')))
+    }
     setWasLogin(window.localStorage.getItem('token') != null);
+    setWasLogin(window.localStorage.getItem('user') == null);
+    console.log(wasLogin);
   }, []);
   return (
     <>
@@ -62,7 +71,7 @@ const Header = () => {
               <Link style={{ textDecoration: "none", color: "black" }} className="btn-sm-square bg-white rounded-circle ms-3" to='/minhquang/profile'>
                 <i className="fa-regular fa-heart"></i>
               </Link>
-              {!wasLogin ?
+              {wasLogin ?
                 <Link style={{ textDecoration: "none", color: "black", padding: "0 10px", borderRadius: "20px", paddingTop: "2.5px" }} className=" bg-white ms-3" to='/login'>
                   <small className="text-body">Đăng nhập</small>
                 </Link> :
@@ -74,23 +83,21 @@ const Header = () => {
                 >
                   <small className="fa fa-user text-body"></small>
                   {isOpen && user && (
-                    <div className="btn-group position-absolute top-100 mt-1 ">
-                      {/* // chỉnh theo vị trí yeeu cầu
-                      ấn vào thì mở nó ra
-                      */}
-                     <div style={{backgroundColor:'white',padding:'5px', borderRadius: '10px',  width: '120px'}}>
-                     <span className="ms-3" style={{marginLeft: 0, color: "blue"}}>Name: {user.name}</span> <br/>
-                      <button
-                        className="btn btn-link"
-                        onClick={handleLogout}
-                      >
-                        Logout
-                      </button><br/>
-                      <button to="/dashboard" className="btn btn-link">
-                        Dashboard
-                      </button>
-                     </div>
-                     
+                    <div className="btn-group position-absolute top-100 mt-1 " style={{ width: '400px' }}>
+                      <div style={{ backgroundColor: 'white', padding: '5px', borderRadius: '10px', width: '265px' }}>
+                        <span className="ms-3" style={{ marginLeft: 0, color: "blue" }}>{user.name}</span> <hr />
+                        <table class="table table-hover">
+                          <tbody>
+                            <tr>
+                              <td onClick={handleLogout} > <i class="fa-solid fa-arrow-right-from-bracket"></i> <span style={{ marginLeft: '15px' }}>Logout</span>  </td>
+                            </tr>
+                            <tr>
+                              <td><i class="fa fa-id-card" aria-hidden="true"></i> <span style={{ marginLeft: '15px' }}>Dashboard</span></td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+
                     </div>
                   )}
                 </Link>
