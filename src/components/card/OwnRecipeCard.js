@@ -16,7 +16,7 @@ const OwnRecipeCard = ({item,user}) => {
     return (
         <div className="product-item">
             <div className="position-relative bg-light overflow-hidden">
-                <Link to='/recipe/id'>
+                <Link to={`/recipe/${item?._id}`}>
                     <img style={{ height: "200px", objectFit: "cover" }} className="img-fluid w-100" src={tags?.image ? tags.image : "https://res.cloudinary.com/sttruyen/image/upload/v1694421667/ea4r3uwdjmkobr1mpmkg.jpg"} alt="" />
                 </Link>
                 <div className="bg-secondary rounded text-white position-absolute start-0 top-0 m-2 py-1 px-3">{tags?.country}</div>

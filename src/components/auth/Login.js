@@ -27,8 +27,17 @@ const Login = () => {
           timer: 1500
         })
         localStorage.setItem("token", token)
-        console.log(typeof data);
-        localStorage.setItem("user", JSON.stringify(data));
+        let userTag = {};
+        data?.tags?.forEach(item => {
+          userTag = {
+              ...userTag,
+              [item?.k]: item?.v
+          }
+        })
+        localStorage.setItem("user", JSON.stringify({
+          ...data,
+          tags:userTag
+        }));
         console.log("=================================");
         const user = JSON.parse(localStorage.getItem('user'));
         console.log(user);
