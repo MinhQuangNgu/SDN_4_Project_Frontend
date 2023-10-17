@@ -1,19 +1,30 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
-const OwnRecipeCard = () => {
+const OwnRecipeCard = ({item,user}) => {
+    const [tags,setTags] = useState({});
+    useEffect(() => {
+        let tag = {};
+        item.tags?.forEach(item => {
+            tag = {
+                ...tag,
+                [item?.k]: item?.v
+            }
+        })
+        setTags({...tag})
+    },[item]);
     return (
         <div className="product-item">
             <div className="position-relative bg-light overflow-hidden">
                 <Link to='/recipe/id'>
-                    <img style={{ height: "200px", objectFit: "cover" }} className="img-fluid w-100" src="https://res.cloudinary.com/sttruyen/image/upload/v1694421667/ea4r3uwdjmkobr1mpmkg.jpg" alt="" />
+                    <img style={{ height: "200px", objectFit: "cover" }} className="img-fluid w-100" src={tags?.image ? tags.image : "https://res.cloudinary.com/sttruyen/image/upload/v1694421667/ea4r3uwdjmkobr1mpmkg.jpg"} alt="" />
                 </Link>
-                <div className="bg-secondary rounded text-white position-absolute start-0 top-0 m-2 py-1 px-3">Nổi bật</div>
+                <div className="bg-secondary rounded text-white position-absolute start-0 top-0 m-2 py-1 px-3">{tags?.country}</div>
             </div>
             <div className="text-center p-2">
-                <Link style={{ textDecoration: "none" }} className="d-block h5 mb-1" to="/recipe/id">Fresh Tomato</Link>
-                <span style={{ fontSize: "15px", fontStyle: "italic" }} className="text-secondary me-2 d-block">by MinhQuang</span>
-                <span className="text-secondary me-1">2000 <i style={{ color: "red" }} className="fa-solid fa-heart"></i></span>
+                <Link style={{ textDecoration: "none" }} className="d-block h5 mb-1" to="/recipe/id">{item?.name}</Link>
+                <span style={{ fontSize: "15px", fontStyle: "italic" }} className="text-secondary me-2 d-block">by {user?.name}</span>
+                <span className="text-secondary me-1">{item?.favorites?.length} <i style={{ color: "red" }} className="fa-solid fa-heart"></i></span>
             </div>
             <div className="d-flex border-top">
                 <small className="w-50 text-center border-end py-2">
