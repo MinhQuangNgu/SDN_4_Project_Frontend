@@ -1,8 +1,34 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import axios from 'axios';
+import { getOwnRecipe, getRecipe } from '../recipe/recipeService';
 
-const OwnRecipeCard = ({item,user}) => {
-    const [tags,setTags] = useState({});
+const OwnRecipeCard = ({ item, user }) => {
+
+    useEffect(() => {
+        getOwnRecipe().then(data => { setDataRecipe(data.data.recipe) })
+    }, [])
+
+    const [dataRecipe, setDataRecipe] = useState([]);
+
+    const handleDelete = (id) => {
+        const token = localStorage.getItem('token');
+
+        axios.delete(`/recipe/${id}`, {
+            headers: {
+                authorization: `Bearer ${token}`
+            }
+        }).then(() => {
+            // Xóa thành công, cập nhật lại state dataRecipe
+            setDataRecipe(prevData => prevData.filter(data => data._id !== id));
+        })
+            .catch(error => {
+                // Xử lý lỗi khi xóa không thành công
+                console.log(error);
+            });
+    }
+    //
+    const [tags, setTags] = useState({});
     useEffect(() => {
         let tag = {};
         item.tags?.forEach(item => {
@@ -11,8 +37,8 @@ const OwnRecipeCard = ({item,user}) => {
                 [item?.k]: item?.v
             }
         })
-        setTags({...tag})
-    },[item]);
+        setTags({ ...tag })
+    }, [item]);
     return (
         <div className="product-item">
             <div className="position-relative bg-light overflow-hidden">
@@ -28,10 +54,10 @@ const OwnRecipeCard = ({item,user}) => {
             </div>
             <div className="d-flex border-top">
                 <small className="w-50 text-center border-end py-2">
-                    <Link style={{ textDecoration: "none" }} className="text-body" to="/recipe/id"><i className="fa fa-eye text-primary me-2"></i>Sửa</Link>
+                    <Link style={{ textDecoration: "none" }} className="text-body" to={`/recipe/edit/${item?._id}`}><i className="fa fa-eye text-primary me-2"></i>Sửa</Link>
                 </small>
                 <small className="w-50 text-center py-2">
-                    <div style={{ textDecoration: "none", cursor: "pointer" }} className="text-body"><i className="fa fa-shopping-bag text-primary me-2"></i>Xóa</div>
+                    <Link style={{ textDecoration: "none", cursor: "pointer" }} onClick={() => handleDelete(item?._id)} className="text-body"><i className="fa fa-shopping-bag text-primary me-2"></i>Xóa</Link>
                 </small>
             </div>
         </div>
