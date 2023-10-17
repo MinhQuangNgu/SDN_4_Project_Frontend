@@ -10,6 +10,7 @@ import CreateRecipe from "../components/recipe/CreateRecipe";
 import Forgot from "../components/auth/Forgot";
 import ChangePassword from '../components/auth/ChangePassword';
 import TableRecipe from "../components/recipe/tableRecipe";
+import EditRecipe from "../components/recipe/EditRecipe";
 
 export const publicRouter = [
 	{
@@ -59,6 +60,10 @@ export const publicRouter = [
 	{
 		element: Admin,
 		path: "/admin/manager/:slug"
+	},
+	{
+		element: EditRecipe,
+		path: "/recipe/edit/:id"
 	}
 ];
 export const adminRouter = [
