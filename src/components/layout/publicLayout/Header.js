@@ -7,6 +7,7 @@ const Header = () => {
   const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')));
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
+
   // localStorage.removeItem('token');
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -24,7 +25,11 @@ const Header = () => {
     })
     navigate('/');
   }
-
+  const dashboard = () => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    console.log(user['_id']);
+    navigate(`/admin/manager/${user['_id']}`);
+  }
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const success = urlParams.get('success');
@@ -33,17 +38,19 @@ const Header = () => {
     let data;
     if (rawData) {
       data = JSON.parse(decodeURIComponent(rawData));
-      // localStorage.setItem("token", data.token)
-      console.log(typeof data);
       localStorage.setItem("user", JSON.stringify(data.user));
-      console.log(JSON.parse(localStorage.getItem('user')));
+      localStorage.setItem("type", data.user.provider);
       setUser(JSON.parse(localStorage.getItem('user')))
     }
     // setWasLogin(window.localStorage.getItem('token') != null);
-    setWasLogin(window.localStorage.getItem('user') == null);
+
     console.log(wasLogin);
     setUser(window.localStorage.getItem('user') ? JSON.parse(window.localStorage.getItem('user')) : null);
-  });
+  }, []);
+
+  useEffect(() => {
+    setWasLogin(window.localStorage.getItem('user') == null);
+  })
 
   return (
     <>
@@ -104,7 +111,7 @@ const Header = () => {
                                 <td onClick={handleLogout} > <i class="fa-solid fa-arrow-right-from-bracket"></i> <span style={{ marginLeft: '15px' }}>Logout</span>  </td>
                               </tr>
                               <tr>
-                                <td><i class="fa fa-id-card" aria-hidden="true"></i> <span style={{ marginLeft: '15px' }}>Dashboard</span></td>
+                                <td onClick={dashboard}><i class="fa fa-id-card" aria-hidden="true"></i> <span style={{ marginLeft: '15px' }}>Dashboard</span></td>
                               </tr>
                             </tbody>
                           </table>
