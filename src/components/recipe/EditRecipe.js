@@ -1,43 +1,59 @@
-import React, { useCallback, useState, useRef, useEffect } from 'react'
-import './style.scss'
+import axios from "axios";
 import { Editor } from "react-draft-wysiwyg";
-import { useDropzone } from 'react-dropzone'
-import axios from 'axios';
-import {
-    EditorState,
-    ContentState,
-    convertToRaw,
-    Modifier,
-    convertFromHTML,
-} from "draft-js";
-import { redirect, useNavigate } from 'react-router-dom';
+import {  EditorState } from "draft-js";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useDropzone } from "react-dropzone";
+import { useNavigate, useParams } from "react-router-dom"
 import CreatableSelect from 'react-select/creatable';
-import Swal from 'sweetalert2';
 
-const CreateRecipe = () => {
-        const [recipe_name, setRecipe_name] = useState('')
-    const [isRecipeNameValid, setIsRecipeNameValid] = useState(true);
-    const [isRecipe, setIsRecipe] = useState(true);
-    const [recipe_introduction, setRecipe_introduction] = useState('')
+const EditRecipe = () => {
+    const { id } = useParams();
+    const [dataRecipe, setDataRecipe] = useState({});
     const [isLoading, setIsLoading] = useState(false);
     const [options, setOptions] = useState([]);
     const [value, setValue] = useState('');
-    const navigate = useNavigate();
 
+    const [recipe_name, setRecipe_name] = useState('')
+    const [recipe_introduction, setRecipe_introduction] = useState('')
+    const [recipe, setRecipe] = useState('')
     const [image, setImage] = useState('');
     const imageRef = useRef();
+    
+
+    useEffect(() => {
+        axios.put(`http://localhost:5000/recipe/${id}`).then(data => setDataRecipe(data.data.data.data.result))
+    }, [])
+    useEffect(() => {
+        axios.get('http://localhost:5000/recipe/common').then((response) => {
+
+            setOptions(response.data);
+        });
+    }, [])
     const createOption = (value) => ({
         label: value,
         value: value.toLowerCase().replace(/\W/g, ''),
     });
+    const handleCreate = (inputValue) => {
+        setIsLoading(true);
+        setTimeout(() => {
+            const newOption = createOption(inputValue);
+            setIsLoading(false);
+            axios.post(
+                "http://localhost:5000/recipe/common", {
+                key: "country",
+                label: inputValue,
+                value: inputValue,
+            })
+            setOptions((prev) => [...prev, newOption]);
+            setValue(newOption);
+        }, 1000);
+    }
     const onDrop = useCallback(acceptedFiles => {
         const file = acceptedFiles[0];
         const url = URL.createObjectURL(acceptedFiles[0]);
         setImage(url);
         imageRef.current = file;
     }, [])
-
-
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
     const [editorState, setEditorState] = useState(EditorState.createEmpty());
     const recipe_details = editorState.getCurrentContent().getPlainText();
@@ -56,128 +72,41 @@ const CreateRecipe = () => {
                 });
         });
     };
+    const navigate= useNavigate();
     const uploadCallback = (file) => {
         return new Promise((resolve, reject) => {
             const formData = new FormData();
             formData.append("file", file);
             formData.append("upload_preset", "sttruyenxyz");
-            // axios
-            //     .post(
-            //         "https://api.cloudinary.com/v1_1/sttruyen/image/upload",
-            //         formData,
-            //         {
-            //             headers: { "X-Requested-With": "XMLHttpRequest" },
-            //             onUploadProgress: (progressEvent) => {
-            //                 const percentCompleted = Math.round(
-            //                     (progressEvent.loaded * 100) / progressEvent.total
-            //                 );
-            //             },
-            //         }
-            //     )
-            //     .then((response) => {
-            //         resolve({ data: { link: response.data.secure_url } });
-            //     })
-            //     .catch((error) => {
-            //         reject(error);
-            //     });
+            
         });
     };
-
-    useEffect(() => {
-        axios.get('/recipe/common').then((response) => {
-
-            setOptions(response.data);
-        });
-    }, [])
-    const handleCreate = (inputValue) => {
-        setIsLoading(true);
-        setTimeout(() => {
-            const newOption = createOption(inputValue);
-            setIsLoading(false);
-            axios.post(
-                "/recipe/common", {
-                key: "country",
-                label: inputValue,
-                value: inputValue,
-            })
-            setOptions((prev) => [...prev, newOption]);
-            setValue(newOption);
-        }, 1000);
-    }
     const handleBackPage = () => {
         navigate(-1);
     }
-    const handleSubmitRecipe = async () => {
-        if (recipe_name.trim() === '') {
-            setIsRecipeNameValid(false);
-            return;
-        }
-        const contentState = editorState.getCurrentContent();
-        if (!contentState.hasText()) {
-            setIsRecipe(false);
-            return;
-        }
-        try {
-            let urlImage = '';
-            // if (imageRef.current) {
-            //     const formData = new FormData();
-            //     formData.append("file", imageRef.current);
-            //     formData.append("upload_preset", "sttruyenxyz");
-            //     try {
-            //         const res = await axios.post(
-            //             "https://api.cloudinary.com/v1_1/sttruyen/image/upload",
-            //             formData
-            //         );
-            //         urlImage = "https:" + res.data.url.split(":")[1];
-            //     } catch (err) {
-            //         Swal.fire({
-            //             position: 'top-end',
-            //             icon: 'error',
-            //             title: err?.message,
-            //             showConfirmButton: false,
-            //             timer: 1500
-            //         })
-            //         return;
-            //     }
-            // }
-            const token = localStorage.getItem('token');
-            const data = await axios.post(`/recipe`,
+
+    const handleEditRecipe = (id) =>{
+        axios.put(`/recipe/${id}`,{
+            name: recipe_name.trim() == "" ? dataRecipe.name : recipe_name,
+            introduction: recipe_introduction.trim() == "" ? dataRecipe.introduction : recipe_introduction,
+            recipes: recipe_details.trim() == "" ? dataRecipe.recipes : recipe_details,
+            tags: [
                 {
-                    name: recipe_name, introduction: recipe_introduction,
-                    recipes: recipe_details,
-                    tags: [
-                        {
-                            k: "image",
-                            v: urlImage,
+                    k: "image",
+                    v: "https://res.cloudinary.com/sttruyen/image/upload/v1694421667/ea4r3uwdjmkobr1mpmkg.jpg",
 
-                        },
-                        {
-                            k: "country",
-                            v: value.value,
+                },
+                {
+                    k: "country",
+                    v: value.value,
 
-                        }
-                    ]
-                }, {
-                headers: {
-                    authorization: `Bearer ${token}`
                 }
-            })
-            navigate(-1)
-        }
-        catch (err) {
+            ]
             
-        }
-
-
+        }).then(() => {navigate(-1)})
     }
-
-
-    const [colourOptions, setColourOptions] = useState([
-        { value: 'red', label: 'Red' },
-        { value: 'blue', label: 'Blue' },
-        { value: 'green', label: 'Green' },
-        { value: 'yellow', label: 'Yellow' }
-    ])
+    console.log(recipe_details);
+    
     return (
         <div className='create_recipe_container'>
             <div class="wrapper">
@@ -206,10 +135,10 @@ const CreateRecipe = () => {
                     <div style={{ width: "400px" }} className='create_form' action="">
                         <h3 style={{ marginBottom: "30px" }}>Tạo công thức</h3>
                         <div class="form-holder active w-100">
-                            <textarea style={{ width: "100%", minHeight: "100px" }} type="text" placeholder="Tên món ăn" class={`form-control ${!isRecipeNameValid ? 'invalid' : ''}`} onChange={e => { setRecipe_name(e.target.value); setIsRecipeNameValid(true) }} />
+                            <textarea style={{ width: "100%", minHeight: "100px" }} type="text" class={`form-control `} placeholder={dataRecipe.name} onChange={e => { setRecipe_name(e.target.value);  }} />
                         </div>
                         <div class="form-holder active">
-                            <textarea style={{ width: "100%", minHeight: "200px" }} type="text" placeholder="Giới thiệu món ăn" class="form-control" onChange={e => setRecipe_introduction(e.target.value)} />
+                            <textarea style={{ width: "100%", minHeight: "200px" }} type="text"  class="form-control" placeholder={dataRecipe.introduction} onChange={e => setRecipe_introduction(e.target.value)} />
                         </div>
                     </div>
                 </div>
@@ -227,7 +156,11 @@ const CreateRecipe = () => {
                 </div>
                 <div className='recipe_create'>
                     <h3 style={{ marginTop: "20px" }}>Công thức</h3>
-                    <div className={`recipe_create_edit ${!isRecipe ? 'invalid  ' : ''}`}>
+                    <div className={`recipe_create_edit `}>
+                        <div>
+                            Công thức đang hiển thị: <br></br>
+                            {dataRecipe.recipes}
+                        </div>
                         <Editor
                             editorState={editorState}
                             onEditorStateChange={handleChange}
@@ -261,8 +194,8 @@ const CreateRecipe = () => {
                             }}
                         />
                     </div>
-                    <div style={{ marginTop: "30px", marginBottom: "20px" }} className='d-flex justify-content-center' onClick={handleSubmitRecipe}>
-                        <button>Tạo mới</button>
+                    <div style={{ marginTop: "30px", marginBottom: "20px" }} className='d-flex justify-content-center' >
+                        <button onClick={() => handleEditRecipe(id)}>update</button>
                     </div>
                 </div>
             </div>
@@ -272,5 +205,4 @@ const CreateRecipe = () => {
         </div>
     )
 }
-
-export default CreateRecipe
+export default EditRecipe

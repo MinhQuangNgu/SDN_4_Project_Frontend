@@ -52,7 +52,17 @@ const Register = () => {
                     timer: 1500
                 })
                 localStorage.setItem("token", token)
-                localStorage.setItem("user", JSON.stringify(data));
+                let userTag = {};
+                data?.tags?.forEach(item => {
+                    userTag = {
+                        ...userTag,
+                        [item?.k]: item?.v
+                    }
+                })
+                localStorage.setItem("user", JSON.stringify({
+                    ...data,
+                    tags: userTag
+                }));
                 navigate('/')
             }
             else {
