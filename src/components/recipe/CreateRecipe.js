@@ -119,27 +119,27 @@ const CreateRecipe = () => {
         }
         try {
             let urlImage = '';
-            // if (imageRef.current) {
-            //     const formData = new FormData();
-            //     formData.append("file", imageRef.current);
-            //     formData.append("upload_preset", "sttruyenxyz");
-            //     try {
-            //         const res = await axios.post(
-            //             "https://api.cloudinary.com/v1_1/sttruyen/image/upload",
-            //             formData
-            //         );
-            //         urlImage = "https:" + res.data.url.split(":")[1];
-            //     } catch (err) {
-            //         Swal.fire({
-            //             position: 'top-end',
-            //             icon: 'error',
-            //             title: err?.message,
-            //             showConfirmButton: false,
-            //             timer: 1500
-            //         })
-            //         return;
-            //     }
-            // }
+            if (imageRef.current) {
+                const formData = new FormData();
+                formData.append("file", imageRef.current);
+                formData.append("upload_preset", "sttruyenxyz");
+                try {
+                    const res = await axios.post(
+                        "https://api.cloudinary.com/v1_1/sttruyen/image/upload",
+                        formData
+                    );
+                    urlImage = "https:" + res.data.url.split(":")[1];
+                } catch (err) {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: err?.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                    return;
+                }
+            }
             const token = localStorage.getItem('token');
             const data = await axios.post(`/recipe`,
                 {
