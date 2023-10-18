@@ -24,7 +24,6 @@ const Dashboard = () => {
 
     const [dashboard, setDashboard] = useState(null)
 
-
     let date = 31;
     let labels = Array(date)
         .fill(1)
@@ -50,7 +49,7 @@ const Dashboard = () => {
             }
         })
             .then(res => {
-                console.log(res.data);
+
                 setDashboard(res.data);
             })
             .catch(err => {
@@ -62,8 +61,93 @@ const Dashboard = () => {
                     timer: 1500
                 })
             })
-    }, []);
+    }, [dashboard]);
 
+    const deleteRecipe = (id) => {
+
+        console.log(id);
+        const token = localStorage.getItem("token");
+        axios.delete(`/recipe/${id}`, {
+            headers: {
+                authorization: `Bearer ${token}`
+            }
+        })
+            .then(res => {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Delete Success',
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+            })
+            .catch(err => {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'error',
+                    title: "Error network",
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+            })
+    }
+    const blockUser = (id) => {
+
+        console.log(id);
+        const token = localStorage.getItem("token");
+        axios.put(`/user/block/${id}`, {
+            headers: {
+                authorization: `Bearer ${token}`
+            }
+        })
+            .then(res => {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Block Success',
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+            })
+            .catch(err => {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'error',
+                    title: "Error network",
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+            })
+    }
+    const openUser = (id) => {
+
+        console.log(id);
+        const token = localStorage.getItem("token");
+        axios.put(`/user/open/${id}`, {
+            headers: {
+                authorization: `Bearer ${token}`
+            }
+        })
+            .then(res => {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Open Success',
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+
+            })
+            .catch(err => {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'error',
+                    title: "Error network",
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+            })
+    }
     let data = {
         labels,
         datasets: [
@@ -141,7 +225,7 @@ const Dashboard = () => {
                                         <td>{moment(item?.createdAt).fromNow()}</td>
                                         <td>{item?.email}</td>
                                         <td>{item?.role}</td>
-                                        <td><button className="btn btn-sm btn-primary" href="">Khóa</button></td>
+                                        <td>{item?.status == "opened" ? <button className="btn btn-sm btn-primary" href="" onClick={() => blockUser(item?._id)}>Khóa</button> : <button className="btn btn-sm btn-primary" href="" onClick={() => openUser(item?._id)}>Open again</button>}</td>
                                     </tr>)}
                             </tbody>
                         </table>
@@ -165,14 +249,14 @@ const Dashboard = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {dashboard?.newRecipe?.map(item => 
-                                <tr key={item?._id + "dashboard"}>
-                                    <td><input className="form-check-input" type="checkbox" /></td>
-                                    <td>{moment(item?.createdAt).fromNow()}</td>
-                                    <td>{item?.name}</td>
-                                    <td>Jhon Doe</td>
-                                    <td><button className="btn btn-sm btn-primary" href="">Khóa</button></td>
-                                </tr>)}
+                                {dashboard?.newRecipe?.map(item =>
+                                    <tr key={item?._id + "dashboard"}>
+                                        <td><input className="form-check-input" type="checkbox" /></td>
+                                        <td>{moment(item?.createdAt).fromNow()}</td>
+                                        <td>{item?.name}</td>
+                                        <td>Jhon Doe</td>
+                                        <td><button className="btn btn-sm btn-primary" href="" onClick={() => deleteRecipe(item?._id)}> Khóa</button></td>
+                                    </tr>)}
                             </tbody>
                         </table>
                     </div>

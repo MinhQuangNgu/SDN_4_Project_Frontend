@@ -4,15 +4,15 @@ import './style.scss'
 import Swal from 'sweetalert2';
 const Header = () => {
   const [wasLogin, setWasLogin] = useState(true);
-  const [user,setUser] = useState(null);
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')));
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
+  // localStorage.removeItem('token');
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
-
-  const handleLogout = () =>{
+  const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     setWasLogin(false);
@@ -25,11 +25,32 @@ const Header = () => {
     })
     navigate('/');
   }
-
+  const dashboard = () => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    console.log(user['_id']);
+    navigate(`/admin/manager/${user['_id']}`);
+  }
   useEffect(() => {
-    setWasLogin(window.localStorage.getItem('token') != null);
+    const urlParams = new URLSearchParams(window.location.search);
+    const success = urlParams.get('success');
+    const statusCode = urlParams.get('statusCode');
+    const rawData = urlParams.get('data');
+    let data;
+    if (rawData) {
+      data = JSON.parse(decodeURIComponent(rawData));
+      localStorage.setItem("user", JSON.stringify(data.user));
+      localStorage.setItem("type", data.user.provider);
+      setUser(JSON.parse(localStorage.getItem('user')))
+    }
+    // setWasLogin(window.localStorage.getItem('token') != null);
+
+    console.log(wasLogin);
     setUser(window.localStorage.getItem('user') ? JSON.parse(window.localStorage.getItem('user')) : null);
   }, []);
+
+  useEffect(() => {
+    setWasLogin(window.localStorage.getItem('user') == null);
+  })
 
   return (
     <>
@@ -69,41 +90,47 @@ const Header = () => {
               <Link style={{ textDecoration: "none", color: "black" }} className="btn-sm-square bg-white rounded-circle ms-3" to='/minhquang/profile'>
                 <i className="fa-regular fa-heart"></i>
               </Link>
-              {!wasLogin ?
+              {wasLogin ?
                 <Link style={{ textDecoration: "none", color: "black", padding: "0 10px", borderRadius: "20px", paddingTop: "2.5px" }} className=" bg-white ms-3" to='/login'>
                   <small className="text-body">Đăng nhập</small>
                 </Link> :
                 <div
-                  style={{ textDecoration: 'none', color: 'black',cursor:"pointer" }}
+                  style={{ textDecoration: 'none', color: 'black', cursor: "pointer" }}
                   className="btn-sm-square bg-white rounded-circle ms-3 position-relative"
                   onClick={toggleMenu}
                 >
                   <small className="fa fa-user text-body"></small>
-                  {isOpen && <div className='header_user'>
-                      <div className='header_user_n'>
-                        <p><i>Name: {user?.name}</i></p>
+                  {
+                    isOpen && user && (
+                      <div className="btn-group position-absolute top-100 mt-1 " style={{ width: '400px' }}>
+                        <div style={{ backgroundColor: 'white', padding: '5px', borderRadius: '10px', width: '265px' }}>
+                          <span className="ms-3" style={{ marginLeft: 0, color: "blue" }}>{user.name}</span> <hr />
+                          <table class="table table-hover">
+                            <tbody>
+                              <tr>
+                                <td onClick={handleLogout} > <i class="fa-solid fa-arrow-right-from-bracket"></i> <span style={{ marginLeft: '15px' }}>Logout</span>  </td>
+                              </tr>
+                              <tr>
+                                <td onClick={dashboard}><i class="fa fa-id-card" aria-hidden="true"></i> <span style={{ marginLeft: '15px' }}>Dashboard</span></td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+
                       </div>
-                      <div onClick={() => {
-                        navigate(`/${user?._id}/profile`)
-                      }} className='header_user_n'>
-                        <p>Profile</p>
-                      </div>
-                      <div onClick={handleLogout} className='header_user_n'>
-                        <p>
-                            Đăng xuất
-                        </p>
-                      </div>
-                    </div>}
+                    )
+                  }
                 </div>
               }
 
+            </div >
+          </div >
 
-            </div>
-          </div>
         </nav >
       </div >
     </>
   )
 }
+
 
 export default Header
