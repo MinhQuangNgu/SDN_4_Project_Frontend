@@ -1,6 +1,13 @@
 import axios from "axios";
 import { Editor } from "react-draft-wysiwyg";
-import { EditorState } from "draft-js";
+import {
+    EditorState,
+    ContentState,
+    convertToRaw,
+    Modifier,
+    convertFromHTML,
+} from "draft-js";
+import draftToHtml from "draftjs-to-html";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useNavigate, useParams } from "react-router-dom"
@@ -19,18 +26,10 @@ const EditRecipe = () => {
     const [recipe, setRecipe] = useState('')
     const [image, setImage] = useState('');
 
+    const [editorState, setEditorState] = useState(EditorState.createEmpty());
+
     const imageRef = useRef();
 
-
-    useEffect(() => {
-        axios.put(`http://localhost:5000/recipe/${id}`).then(data => setDataRecipe(data.data.data.data.result))
-    }, [])
-    useEffect(() => {
-        axios.get('http://localhost:5000/recipe/common').then((response) => {
-
-            setOptions(response.data);
-        });
-    }, [])
     const createOption = (value) => ({
         label: value,
         value: value.toLowerCase().replace(/\W/g, ''),
@@ -41,7 +40,7 @@ const EditRecipe = () => {
             const newOption = createOption(inputValue);
             setIsLoading(false);
             axios.post(
-                "http://localhost:5000/recipe/common", {
+                "/recipe/common", {
                 key: "country",
                 label: inputValue,
                 value: inputValue,
@@ -54,14 +53,50 @@ const EditRecipe = () => {
         const file = acceptedFiles[0];
         const url = URL.createObjectURL(acceptedFiles[0]);
         setImage(url);
-                imageRef.current = file;
+        imageRef.current = file;
     }, [])
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
-    const [editorState, setEditorState] = useState(EditorState.createEmpty());
-    const recipe_details = editorState.getCurrentContent().getPlainText();
+    useEffect(() => {
+        axios.get(`/recipe/${id}`).then(data => {
+            let newTags = {};
+            data?.data?.recipe?.tags?.forEach(item => {
+                newTags = {
+                    ...newTags,
+                    [item.k]:item.v
+                }
+            })
+            setDataRecipe({
+                ...data?.data?.recipe,
+                tags:newTags
+            });
+            console.log(newTags)
+            setImage(newTags?.image);
+        })
+    }, [])
+
+    useEffect(() => {
+        axios.get('/recipe/common').then((response) => {
+            setOptions(response.data);
+        });
+    }, [])
+
+    useEffect(() => {
+        if (dataRecipe && dataRecipe.recipes) {
+            const convertedContent = convertFromHTML(dataRecipe.recipes);
+            const contentState = ContentState.createFromBlockArray(convertedContent);
+            setEditorState(EditorState.createWithContent(contentState));
+        }
+    }, [dataRecipe]);
+
+
     const handleChange = (data) => {
         setEditorState(data);
     };
+    const [content, setContent] = useState("");
+    useEffect(() => {
+        setContent(draftToHtml(convertToRaw(editorState.getCurrentContent())));
+    }, [editorState]);
+
     const onImageUpload = (file) => {
         return new Promise((resolve, reject) => {
             uploadCallback(file)
@@ -113,7 +148,7 @@ const EditRecipe = () => {
         axios.put(`/recipe/${id}`, {
             name: recipe_name.trim() == "" ? dataRecipe.name : recipe_name,
             introduction: recipe_introduction.trim() == "" ? dataRecipe.introduction : recipe_introduction,
-            recipes: recipe_details.trim() == "" ? dataRecipe.recipes : recipe_details,
+            recipes: content,
             tags: [
                 {
                     k: "image",
@@ -129,7 +164,6 @@ const EditRecipe = () => {
 
         }).then(() => { navigate(-1) })
     }
-    console.log(recipe_details);
 
     return (
         <div className='create_recipe_container'>
@@ -159,32 +193,33 @@ const EditRecipe = () => {
                     <div style={{ width: "400px" }} className='create_form' action="">
                         <h3 style={{ marginBottom: "30px" }}>Tạo công thức</h3>
                         <div class="form-holder active w-100">
-                            <textarea style={{ width: "100%", minHeight: "100px" }} type="text" class={`form-control `} placeholder={dataRecipe.name} onChange={e => { setRecipe_name(e.target.value); }} />
+                            <textarea style={{ width: "100%", minHeight: "100px" }} type="text" class={`form-control `} defaultValue={dataRecipe?.name} onChange={e => { setRecipe_name(e.target.value); }} />
                         </div>
                         <div class="form-holder active">
-                            <textarea style={{ width: "100%", minHeight: "200px" }} type="text" class="form-control" placeholder={dataRecipe.introduction} onChange={e => setRecipe_introduction(e.target.value)} />
+                            <textarea style={{ width: "100%", minHeight: "200px" }} type="text" class="form-control" defaultValue={dataRecipe?.introduction} onChange={e => setRecipe_introduction(e.target.value)} />
                         </div>
                     </div>
                 </div>
                 <div className='create_form-2'>
                     <div style={{ margin: "10px 0" }} class="form-holder active w-100">
+                        {dataRecipe && options && 
                         <CreatableSelect onChange={(newValue) => setValue(newValue)}
                             isClearable
                             isLoading={isLoading}
                             onCreateOption={handleCreate}
                             options={options}
                             value={value}
+                            defaultValue={{
+                                value:dataRecipe?.tags?.country,
+                                label:dataRecipe?.tags?.country
+                            }}
                             placeholder="Chọn quốc gia"
-                        />
+                        />}
                     </div>
                 </div>
                 <div className='recipe_create'>
                     <h3 style={{ marginTop: "20px" }}>Công thức</h3>
                     <div className={`recipe_create_edit `}>
-                        <div>
-                            Công thức đang hiển thị: <br></br>
-                            {dataRecipe.recipes}
-                        </div>
                         <Editor
                             editorState={editorState}
                             onEditorStateChange={handleChange}
