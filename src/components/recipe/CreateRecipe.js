@@ -10,6 +10,7 @@ import {
     Modifier,
     convertFromHTML,
 } from "draft-js";
+import draftToHtml from "draftjs-to-html";
 import { redirect, useNavigate } from 'react-router-dom';
 import CreatableSelect from 'react-select/creatable';
 import Swal from 'sweetalert2';
@@ -23,6 +24,8 @@ const CreateRecipe = () => {
     const [options, setOptions] = useState([]);
     const [value, setValue] = useState('');
     const navigate = useNavigate();
+
+    const [content, setContent] = useState("");
 
     const [image, setImage] = useState('');
     const imageRef = useRef();
@@ -38,9 +41,13 @@ const CreateRecipe = () => {
     }, [])
 
 
+
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
     const [editorState, setEditorState] = useState(EditorState.createEmpty());
-    const recipe_details = editorState.getCurrentContent().getPlainText();
+
+    useEffect(() => {
+        setContent(draftToHtml(convertToRaw(editorState.getCurrentContent())));
+      }, [editorState]);
     const handleChange = (data) => {
         setEditorState(data);
     };
@@ -144,7 +151,7 @@ const CreateRecipe = () => {
             const data = await axios.post(`/recipe`,
                 {
                     name: recipe_name, introduction: recipe_introduction,
-                    recipes: recipe_details,
+                    recipes: content,
                     tags: [
                         {
                             k: "image",
