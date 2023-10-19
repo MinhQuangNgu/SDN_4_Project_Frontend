@@ -63,33 +63,24 @@ const Dashboard = () => {
             })
     }, [dashboard]);
 
-    const deleteRecipe = (id) => {
-
-        console.log(id);
-        const token = localStorage.getItem("token");
-        axios.delete(`/recipe/${id}`, {
-            headers: {
-                authorization: `Bearer ${token}`
-            }
-        })
-            .then(res => {
-                Swal.fire({
-                    position: 'top-end',
-                    icon: 'success',
-                    title: 'Delete Success',
-                    showConfirmButton: false,
-                    timer: 1500
-                })
+    const deleteRecipe = async (id) => {
+        try{
+            await axios.post(`/admin/recipe/${id}`,{
+            },{
+                headers:{
+                    Authorization:`Bearer ${localStorage.getItem('token')}`
+                }
             })
-            .catch(err => {
-                Swal.fire({
-                    position: 'top-end',
-                    icon: 'error',
-                    title: "Error network",
-                    showConfirmButton: false,
-                    timer: 1500
-                })
+            Swal.fire({
+                position: 'top-end',
+                icon: 'success',
+                title: "Change status successfully!",
+                showConfirmButton: false,
+                timer: 1500
             })
+        }
+        catch(err){
+        }
     }
     const blockUser = (id) => {
 
@@ -255,7 +246,7 @@ const Dashboard = () => {
                                         <td>{moment(item?.createdAt).fromNow()}</td>
                                         <td>{item?.name}</td>
                                         <td>Jhon Doe</td>
-                                        <td><button className="btn btn-sm btn-primary" href="" onClick={() => deleteRecipe(item?._id)}> Khóa</button></td>
+                                        <td><button className="btn btn-sm btn-primary" href="" onClick={() => deleteRecipe(item?._id)}> Change status</button></td>
                                     </tr>)}
                             </tbody>
                         </table>

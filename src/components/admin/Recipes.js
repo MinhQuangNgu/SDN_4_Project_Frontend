@@ -3,9 +3,12 @@ import moment from 'moment';
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Swal from 'sweetalert2'
+import RecipeAdminCard from './RecipeAdminCard';
 const Recipes = () => {
 
     const [recipes, setRecipes] = useState([]);
+
+    const [reload,setReload] = useState(false);
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -15,7 +18,6 @@ const Recipes = () => {
             }
         })
             .then(res => {
-                console.log(res.data?.recipes);
                 setRecipes(res.data?.recipes);
             })
             .catch(err => {
@@ -27,7 +29,7 @@ const Recipes = () => {
                     timer: 1500
                 })
             })
-    }, []);
+    }, [reload]);
     return (
         <div>
             <section className="ftco-section">
@@ -41,43 +43,12 @@ const Recipes = () => {
                                         <th>Tên món</th>
                                         <th>Người tạo</th>
                                         <th>Status</th>
-                                        <th>&nbsp;</th>
+                                        <th style={{width:'15%'}}>&nbsp;</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {recipes?.map((item,index) => 
-                                    <tr key={item?._id + "recipe"} className="alert" role="alert">
-                                        <td className="border-bottom-0-custom">
-                                            {index + 1}
-                                        </td>
-                                        <td className="d-flex align-items-center border-bottom-0-custom">
-                                            <div className="img" style={{ backgroundImage: "url('https://res.cloudinary.com/sttruyen/image/upload/v1694421667/ksjctjx7rrwocptprfdx.jpg')", marginRight: "10px" }}></div>
-                                            <div className="pl-3 email">
-                                                <span>
-                                                    <Link to='/'>
-                                                        {item?.name}
-                                                    </Link>
-                                                </span>
-                                                <span>Added:{moment(item?.createdAt).fromNow()}</span>
-                                            </div>
-                                        </td>
-                                        <td className="border-bottom-0-custom">
-                                            <div className="img" style={{ backgroundImage: "url('https://res.cloudinary.com/sttruyen/image/upload/v1694421667/ksjctjx7rrwocptprfdx.jpg')", marginLeft: "10px" }}></div>
-                                            <div className="pl-3 email">
-                                                <span>
-                                                    <Link to='/minhquang/profile'>
-                                                        Minh Quang
-                                                    </Link>
-                                                </span>
-                                            </div>
-                                        </td>
-                                        <td className="status border-bottom-0-custom"><span className="active">Active</span></td>
-                                        <td className="border-bottom-0-custom">
-                                            <button style={{ marginLeft: "5px", height: "30px", fontSize: "12px" }} type="button" className="btn btn-danger">
-                                                Khóa
-                                            </button>
-                                        </td>
-                                    </tr>)}
+                                    <RecipeAdminCard setReload={setReload} key={item?._id + "a"} item={item} index={index}/>)}
                                 </tbody>
                             </table>
                         </div>
