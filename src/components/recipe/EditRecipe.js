@@ -1,10 +1,11 @@
 import axios from "axios";
 import { Editor } from "react-draft-wysiwyg";
-import {  EditorState } from "draft-js";
+import { EditorState } from "draft-js";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useNavigate, useParams } from "react-router-dom"
 import CreatableSelect from 'react-select/creatable';
+import Swal from "sweetalert2";
 
 const EditRecipe = () => {
     const { id } = useParams();
@@ -17,8 +18,9 @@ const EditRecipe = () => {
     const [recipe_introduction, setRecipe_introduction] = useState('')
     const [recipe, setRecipe] = useState('')
     const [image, setImage] = useState('');
+
     const imageRef = useRef();
-    
+
 
     useEffect(() => {
         axios.put(`http://localhost:5000/recipe/${id}`).then(data => setDataRecipe(data.data.data.data.result))
@@ -52,7 +54,7 @@ const EditRecipe = () => {
         const file = acceptedFiles[0];
         const url = URL.createObjectURL(acceptedFiles[0]);
         setImage(url);
-        imageRef.current = file;
+                imageRef.current = file;
     }, [])
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
     const [editorState, setEditorState] = useState(EditorState.createEmpty());
@@ -65,35 +67,57 @@ const EditRecipe = () => {
             uploadCallback(file)
                 .then((response) => {
                     // setUploadImage(true);
-                                        resolve({ data: { link: response.data.link } });
-                                    })
+                    resolve({ data: { link: response.data.link } });
+                })
                 .catch((error) => {
                     reject(error);
                 });
         });
     };
-    const navigate= useNavigate();
+    const navigate = useNavigate();
     const uploadCallback = (file) => {
         return new Promise((resolve, reject) => {
             const formData = new FormData();
             formData.append("file", file);
             formData.append("upload_preset", "sttruyenxyz");
-            
+
         });
     };
     const handleBackPage = () => {
         navigate(-1);
     }
 
-    const handleEditRecipe = (id) =>{
-        axios.put(`/recipe/${id}`,{
+    const handleEditRecipe = async (id) => {
+        let urlImage = '';
+        if (imageRef.current) {
+            const formData = new FormData();
+            formData.append("file", imageRef.current);
+            formData.append("upload_preset", "sttruyenxyz");
+            try {
+                const res = await axios.post(
+                    "https://api.cloudinary.com/v1_1/sttruyen/image/upload",
+                    formData
+                );
+                urlImage = "https:" + res.data.url.split(":")[1];
+            } catch (err) {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'error',
+                    title: err?.message,
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+                return;
+            }
+        }
+        axios.put(`/recipe/${id}`, {
             name: recipe_name.trim() == "" ? dataRecipe.name : recipe_name,
             introduction: recipe_introduction.trim() == "" ? dataRecipe.introduction : recipe_introduction,
             recipes: recipe_details.trim() == "" ? dataRecipe.recipes : recipe_details,
             tags: [
                 {
                     k: "image",
-                    v: "https://res.cloudinary.com/sttruyen/image/upload/v1694421667/ea4r3uwdjmkobr1mpmkg.jpg",
+                    v: urlImage,
 
                 },
                 {
@@ -102,11 +126,11 @@ const EditRecipe = () => {
 
                 }
             ]
-            
-        }).then(() => {navigate(-1)})
+
+        }).then(() => { navigate(-1) })
     }
     console.log(recipe_details);
-    
+
     return (
         <div className='create_recipe_container'>
             <div class="wrapper">
@@ -135,10 +159,10 @@ const EditRecipe = () => {
                     <div style={{ width: "400px" }} className='create_form' action="">
                         <h3 style={{ marginBottom: "30px" }}>Tạo công thức</h3>
                         <div class="form-holder active w-100">
-                            <textarea style={{ width: "100%", minHeight: "100px" }} type="text" class={`form-control `} placeholder={dataRecipe.name} onChange={e => { setRecipe_name(e.target.value);  }} />
+                            <textarea style={{ width: "100%", minHeight: "100px" }} type="text" class={`form-control `} placeholder={dataRecipe.name} onChange={e => { setRecipe_name(e.target.value); }} />
                         </div>
                         <div class="form-holder active">
-                            <textarea style={{ width: "100%", minHeight: "200px" }} type="text"  class="form-control" placeholder={dataRecipe.introduction} onChange={e => setRecipe_introduction(e.target.value)} />
+                            <textarea style={{ width: "100%", minHeight: "200px" }} type="text" class="form-control" placeholder={dataRecipe.introduction} onChange={e => setRecipe_introduction(e.target.value)} />
                         </div>
                     </div>
                 </div>
