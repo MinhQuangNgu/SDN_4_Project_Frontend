@@ -6,6 +6,8 @@ const Accounts = () => {
 
     const [users,setUsers] = useState([]);
 
+    const [reload,setReload] = useState(false);
+
     useEffect(() => {
         const token = localStorage.getItem("token");
         axios.get('/admin/user', {
@@ -25,7 +27,7 @@ const Accounts = () => {
                     timer: 1500
                 })
             })
-    }, []);
+    }, [reload]);
     return (
         <div>
             <section className="ftco-section">
@@ -45,7 +47,7 @@ const Accounts = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                   {users?.map((item,index) =>  <AccountCard index={index} key={item?._id + "user"} user={item}/>)}
+                                   {users?.map((item,index) =>  <AccountCard setReload={setReload} index={index} key={item?._id + "user"} user={item}/>)}
                                 </tbody>
                             </table>
                         </div>
