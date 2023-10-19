@@ -28,11 +28,11 @@ import { Link } from "react-router-dom";
 // }
 const RecipeCard = ({ name, image, owner, favorites }) => {
   return (
-    <div className="product-item">
+    <div style={{margin:"5px 0"}} className="product-item">
       <div className="position-relative bg-light overflow-hidden">
         <Link to="/recipe/id">
           <img
-            style={{ height: "350px", objectFit: "cover" }}
+            style={{ minHeight: "350px", objectFit: "cover" }}
             className="img-fluid w-100"
             src={image}
             alt={name}
