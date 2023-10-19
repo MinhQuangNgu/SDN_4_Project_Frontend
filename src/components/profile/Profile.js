@@ -193,6 +193,35 @@ const Profile = () => {
             })
         }
     }
+
+    const handleUnFollow = async (id) => {
+        try {
+            const token = localStorage.getItem('token');
+            const data = await axios.post(`/user/f_m/${id}`, {
+            }, {
+                headers: {
+                    authorization: `Bearer ${token}`
+                }
+            });
+            Swal.fire({
+                position: 'top-end',
+                icon: 'success',
+                title: data?.data?.msg,
+                showConfirmButton: false,
+                timer: 1500
+            })
+            setReload(pre => !pre);
+        }
+        catch (err) {
+            Swal.fire({
+                position: 'top-end',
+                icon: 'error',
+                title: err?.message,
+                showConfirmButton: false,
+                timer: 1500
+            })
+        }
+    }
     useEffect(() => {
         window.scrollTo(0, 0);
     }, []);
@@ -372,7 +401,7 @@ const Profile = () => {
                                                                                     </div>
                                                                                 </div>
                                                                                 <div className="d-flex pt-1">
-                                                                                    <button type="button" className="btn btn-primary flex-grow-1">Theo dõi</button>
+                                                                                    <button onClick={() => handleUnFollow(item?._id)} type="button" className="btn btn-primary flex-grow-1">Bỏ theo dõi</button>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
