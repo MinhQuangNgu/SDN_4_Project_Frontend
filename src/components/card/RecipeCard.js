@@ -32,7 +32,7 @@ const RecipeCard = ({ name, image, owner, favorites }) => {
       <div className="position-relative bg-light overflow-hidden">
         <Link to="/recipe/id">
           <img
-            style={{ minHeight: "350px", objectFit: "cover" }}
+            style={{ minHeight: "350px", objectFit: "cover",maxHeight:"350px" }}
             className="img-fluid w-100"
             src={image}
             alt={name}
