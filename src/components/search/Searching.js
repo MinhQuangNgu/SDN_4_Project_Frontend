@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./style.scss";
 import RecipeCard from "../card/RecipeCard";
 import axios from "axios";
+import { Link } from "react-router-dom";
 import ChefCard from "../card/ChefCard";
 
 const Searching = () => {
@@ -92,7 +93,10 @@ const Searching = () => {
                   style={{ marginBottom: "20px" }}
                   className="col-12 col-lg-6"
                 >
-                  <span className="input-group-text" id="inputGroup-sizing-default">
+                  <span
+                    className="input-group-text"
+                    id="inputGroup-sizing-default"
+                  >
                     Type
                   </span>
                   <input
@@ -108,7 +112,10 @@ const Searching = () => {
                   style={{ marginBottom: "20px" }}
                   className="col-12 col-lg-6"
                 >
-                  <span className="input-group-text" id="inputGroup-sizing-default">
+                  <span
+                    className="input-group-text"
+                    id="inputGroup-sizing-default"
+                  >
                     Country
                   </span>
                   <input
@@ -142,19 +149,25 @@ const Searching = () => {
           <div className="col-1"></div>
           <div className="col-10">
             <div className="row w-100 search_container">
-              {notFoundMessage && <div className="not-found-message" ><h3>{notFoundMessage}</h3></div>}
+              {notFoundMessage && (
+                <div className="not-found-message">
+                  <h3>{notFoundMessage}</h3>
+                </div>
+              )}
               {recipes.map((recipe) => (
                 <div
                   className="col-xl-4 col-lg-4 col-md-6 wow fadeInUp"
                   data-wow-delay="0.1s"
                   key={recipe._id}
                 >
-                  <RecipeCard
-                    name={recipe.name}
-                    image={recipe.tags.find((tag) => tag.k === "image").v}
-                    owner={recipe.owner}
-                    favorites={recipe.favorites}
-                  />
+                  <Link to={`/recipe/${recipe.slug}`}>
+                    <RecipeCard
+                      name={recipe.name}
+                      image={recipe.tags.find((tag) => tag.k === "image").v}
+                      owner={recipe.owner}
+                      recipe={recipe}
+                    />
+                  </Link>
                 </div>
               ))}
 
