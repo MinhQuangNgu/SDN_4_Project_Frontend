@@ -3,6 +3,8 @@ import "./style.scss";
 import RecipeCard from "../card/RecipeCard";
 import axios from "axios";
 import ChefCard from "../card/ChefCard";
+import { useLocation } from "react-router-dom";
+import Pagination from "./Pagination";
 
 const Searching = () => {
   const [name, setName] = useState("");
@@ -10,6 +12,25 @@ const Searching = () => {
   const [country, setCountry] = useState("");
   const [recipes, setRecipes] = useState([]);
   const [notFoundMessage, setNotFoundMessage] = useState("");
+  const location = useLocation();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [urlApi, setUrlApi] = useState("");
+  const[size,setsize]=useState(0);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    getRecipe(undefined, page);
+  };
+
+  const getRecipe = async (url, page) => {
+    const res = await axios.get(url || urlApi, {
+      params: { page, limit: 5 },
+    });
+    if (res?.data?.success) {
+      setRecipes(res?.data?.data);
+      setsize(res?.data?.size)
+    }
+  };
 
   const handleNameChange = (e) => {
     setName(e.target.value);
@@ -46,6 +67,15 @@ const Searching = () => {
       setNotFoundMessage("Không tìm thấy món ăn .");
     }
   };
+  useEffect(() => {
+    if (new URLSearchParams(location.search).get("type") === "new") {
+      setUrlApi("/recipe/recipe_new");
+      getRecipe("/recipe/recipe_new", 1);
+    } else {
+      setUrlApi("/recipe/recipe_favorite");
+      getRecipe("/recipe/recipe_favorite", 1);
+    }
+  }, []);
 
   const handleReset = () => {
     setName("");
@@ -92,7 +122,10 @@ const Searching = () => {
                   style={{ marginBottom: "20px" }}
                   className="col-12 col-lg-6"
                 >
-                  <span className="input-group-text" id="inputGroup-sizing-default">
+                  <span
+                    className="input-group-text"
+                    id="inputGroup-sizing-default"
+                  >
                     Type
                   </span>
                   <input
@@ -108,7 +141,10 @@ const Searching = () => {
                   style={{ marginBottom: "20px" }}
                   className="col-12 col-lg-6"
                 >
-                  <span className="input-group-text" id="inputGroup-sizing-default">
+                  <span
+                    className="input-group-text"
+                    id="inputGroup-sizing-default"
+                  >
                     Country
                   </span>
                   <input
@@ -142,7 +178,11 @@ const Searching = () => {
           <div className="col-1"></div>
           <div className="col-10">
             <div className="row w-100 search_container">
-              {notFoundMessage && <div className="not-found-message" ><h3>{notFoundMessage}</h3></div>}
+              {notFoundMessage && (
+                <div className="not-found-message">
+                  <h3>{notFoundMessage}</h3>
+                </div>
+              )}
               {recipes.map((recipe) => (
                 <div
                   className="col-xl-4 col-lg-4 col-md-6 wow fadeInUp"
@@ -150,6 +190,7 @@ const Searching = () => {
                   key={recipe._id}
                 >
                   <RecipeCard
+                  item={recipe}
                     name={recipe.name}
                     image={recipe.tags.find((tag) => tag.k === "image").v}
                     owner={recipe.owner}
@@ -162,37 +203,11 @@ const Searching = () => {
                 style={{ marginTop: "30px" }}
                 className="col-12 d-flex justify-content-center"
               >
-                <nav aria-label="Page navigation example">
-                  <ul className="pagination">
-                    <li style={{ cursor: "pointer" }} className="page-item">
-                      <div className="page-link" aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
-                        <span className="sr-only">Previous</span>
-                      </div>
-                    </li>
-                    <li style={{ cursor: "pointer" }} className="page-item">
-                      <div className="page-link active" href="#">
-                        1
-                      </div>
-                    </li>
-                    <li style={{ cursor: "pointer" }} className="page-item">
-                      <div className="page-link" href="#">
-                        2
-                      </div>
-                    </li>
-                    <li style={{ cursor: "pointer" }} className="page-item">
-                      <div className="page-link" href="#">
-                        3
-                      </div>
-                    </li>
-                    <li style={{ cursor: "pointer" }} className="page-item">
-                      <div className="page-link" aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
-                        <span className="sr-only">Next</span>
-                      </div>
-                    </li>
-                  </ul>
-                </nav>
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={Math.ceil(size / 5)}
+                  onPageChange={handlePageChange}
+                />
               </div>
             </div>
           </div>
