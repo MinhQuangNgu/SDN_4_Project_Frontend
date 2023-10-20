@@ -32,9 +32,9 @@ const RecipeCard = ({ item, image, reload }) => {
 
 
   return (
-    <div style={{margin:"5px 0"}} className="product-item">
+    <div style={{ margin: "5px 0" }} className="product-item">
       <div className="position-relative bg-light overflow-hidden">
-        <Link to="/recipe/id">
+      <Link to="/recipe/id">
           <img
               style={{ minHeight: "350px", objectFit: "cover",maxHeight:"350px" }}
             className="img-fluid w-100"
@@ -62,40 +62,25 @@ const RecipeCard = ({ item, image, reload }) => {
           {item?.favorites_size}
           <i style={{ color: "red" }} className="fa-solid fa-heart"></i>
         </span>
-      </div>
-      <div className="d-flex border-top">
-        <small className="w-50 text-center border-end py-2">
-          <Link
-            style={{ textDecoration: "none" }}
-            className="text-body"
-            to="/recipe/id"
-          >
-            <i className="fa fa-eye text-primary me-2"></i>View detail
-          </Link>
-        </small>
-        <small className="w-50 text-center py-2">
-          <div
-            style={{ textDecoration: "none", cursor: "pointer" }}
-            className="text-body"
-            onClick={async () => {
-              await axios.post(
-                `/user/c_m/${item._id}`,
-                {},
-                {
-                  headers: {
-                    authorization: `Bearer ${localStorage.getItem("token")}`,
-                  },
-                }
-              );
-              reload();
-            }}
-          >
-            <i className="fa fa-heart text-primary me-2"></i>
-            {item?.favorites?.find((item) => item === user._id)
-              ? "Unfavorite"
-              : "Favorite"}
-          </div>
-        </small>
+        <div className="d-flex border-top">
+          <small className="w-50 text-center border-end py-2">
+            <Link
+              style={{ textDecoration: "none" }}
+              className="text-body"
+              to="/recipe/id"
+            >
+              <i className="fa fa-eye text-primary me-2"></i>View detail
+            </Link>
+          </small>
+          <small className="w-50 text-center py-2">
+            <div
+              style={{ textDecoration: "none", cursor: "pointer" }}
+              className="text-body"
+            >
+              <i className="fa fa-shopping-bag text-primary me-2"></i>Add to cart
+            </div>
+          </small>
+        </div>
       </div>
     </div>
   );

@@ -62,12 +62,12 @@ const EditRecipe = () => {
             data?.data?.recipe?.tags?.forEach(item => {
                 newTags = {
                     ...newTags,
-                    [item.k]:item.v
+                    [item.k]: item.v
                 }
             })
             setDataRecipe({
                 ...data?.data?.recipe,
-                tags:newTags
+                tags: newTags
             });
             console.log(newTags)
             setImage(newTags?.image);
@@ -202,21 +202,22 @@ const EditRecipe = () => {
                 </div>
                 <div className='create_form-2'>
                     <div style={{ margin: "10px 0" }} class="form-holder active w-100">
-                        {dataRecipe && options && 
-                        <CreatableSelect onChange={(newValue) => setValue(newValue)}
-                            isClearable
-                            isLoading={isLoading}
-                            onCreateOption={handleCreate}
-                            options={options}
-                            value={value}
-                            defaultValue={{
-                                value:dataRecipe?.tags?.country,
-                                label:dataRecipe?.tags?.country
-                            }}
-                            placeholder="Chọn quốc gia"
-                        />}
+                        {dataRecipe && options &&
+                            <CreatableSelect onChange={(newValue) => setValue(newValue)}
+                                isClearable
+                                isLoading={isLoading}
+                                onCreateOption={handleCreate}
+                                options={options}
+                                value={value}
+                                defaultValue={{
+                                    value: dataRecipe?.tags?.country,
+                                    label: dataRecipe?.tags?.country
+                                }}
+                                placeholder="Chọn quốc gia"
+                            />}
                     </div>
                 </div>
+
                 <div className='recipe_create'>
                     <h3 style={{ marginTop: "20px" }}>Công thức</h3>
                     <div className={`recipe_create_edit `}>

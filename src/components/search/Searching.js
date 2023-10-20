@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./style.scss";
 import RecipeCard from "../card/RecipeCard";
 import axios from "axios";
+import { Link } from "react-router-dom";
 import ChefCard from "../card/ChefCard";
 import { useLocation } from "react-router-dom";
 import Pagination from "./Pagination";
