@@ -362,15 +362,13 @@ const Profile = () => {
                                     )}
                                 </div> :
                                     type === "love" ? <div className='row'>
-                                        <div style={{ marginBottom: "20px" }} className="col-xl-4 col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                                            <RecipeCard imageHeight={200} />
-                                        </div>
-                                        <div style={{ marginBottom: "20px" }} className="col-xl-4 col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                                            <RecipeCard imageHeight={200} />
-                                        </div>
-                                        <div style={{ marginBottom: "20px" }} className="col-xl-4 col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                                            <RecipeCard imageHeight={200} />
-                                        </div>
+                                        {user?.favoriteRecipes?.map(item=>{
+                                            const img = item.tags?.find((el) => el.k === "image");
+                                            return  <RecipeCard item={item} image={img?.v} reload={()=> setReload(pre => !pre)}/>
+                                           
+                                        })}
+                                       
+                                    
                                     </div> : <div className='row'>
                                         {user?.followings?.map(item =>
                                             <div key={item?._id + "fowllowing"} style={{ marginBottom: "20px" }} className="col-xl-6 col-lg-6 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
