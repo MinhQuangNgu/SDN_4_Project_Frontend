@@ -183,9 +183,10 @@ const Home = () => {
             }}
           >
              {dataChief.map((item) => {
-              if (item._id === user._id){
+              if (item?._id === user?._id){
                 return
               }
+              console.log(item)
               return (
                 <SwiperSlide>
                   <ProfileCard

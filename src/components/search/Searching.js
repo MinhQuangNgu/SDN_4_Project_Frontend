@@ -25,7 +25,7 @@ const Searching = () => {
 
   const getRecipe = async (url, page) => {
     const res = await axios.get(url || urlApi, {
-      params: { page, limit: 5 },
+      params: { page, limit: 6 },
     });
     if (res?.data?.success) {
       setRecipes(res?.data?.data);
@@ -206,7 +206,7 @@ const Searching = () => {
               >
                 <Pagination
                   currentPage={currentPage}
-                  totalPages={Math.ceil(size / 5)}
+                  totalPages={Math.ceil(size / 6)}
                   onPageChange={handlePageChange}
                 />
               </div>
