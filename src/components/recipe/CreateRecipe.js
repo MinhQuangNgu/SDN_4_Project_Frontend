@@ -25,7 +25,7 @@ const CreateRecipe = () => {
     const [value, setValue] = useState('');
     const navigate = useNavigate();
 
-    const [content, setContent] = useState("");
+   
 
     const [image, setImage] = useState('');
     const imageRef = useRef();
@@ -43,6 +43,7 @@ const CreateRecipe = () => {
 
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
+    const [content, setContent] = useState("");
     const [editorState, setEditorState] = useState(EditorState.createEmpty());
 
     useEffect(() => {
