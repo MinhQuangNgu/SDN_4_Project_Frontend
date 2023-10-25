@@ -4,13 +4,23 @@ import axios from 'axios';
 import { getOwnRecipe, getRecipe } from '../recipe/recipeService';
 
 const OwnRecipeCard = ({ item, user }) => {
-
+    const [active,setActive] = useState(true);
     useEffect(() => {
         getOwnRecipe().then(data => { setDataRecipe(data.data.recipe) })
     }, [])
 
     const [dataRecipe, setDataRecipe] = useState([]);
+    
+    const handleChangeStatus = (id) => {
+        const token = localStorage.getItem('token');
 
+        axios.post(`/recipe/changestatus/${id}`,null,{
+            headers: {
+                authorization: `Bearer ${token}`
+            }
+        });
+        setActive(!active);
+    }
     const handleDelete = (id) => {
         const token = localStorage.getItem('token');
 
@@ -56,8 +66,11 @@ const OwnRecipeCard = ({ item, user }) => {
                 <small className="w-50 text-center border-end py-2">
                     <Link style={{ textDecoration: "none" }} className="text-body" to={`/recipe/edit/${item?._id}`}><i className="fa fa-eye text-primary me-2"></i>Sửa</Link>
                 </small>
-                <small className="w-50 text-center py-2">
+                <small className="w-50 text-center py-2 border-end">
                     <Link style={{ textDecoration: "none", cursor: "pointer" }} onClick={() => handleDelete(item?._id)} className="text-body"><i className="fa fa-shopping-bag text-primary me-2"></i>Xóa</Link>
+                </small>
+                <small className="w-50 text-center py-2 border-end">
+                    <Link style={{ textDecoration: "none", cursor: "pointer" }} onClick={() => handleChangeStatus(item?._id)} className="text-body"><i className="fa fa-shopping-bag text-primary me-2"></i>{item?.status}</Link>
                 </small>
             </div>
         </div>
