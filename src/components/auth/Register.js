@@ -110,14 +110,14 @@ const Register = () => {
                                     <i className="fa fa-envelope" aria-hidden="true"></i>
                                 </span>
                             </div>
-                            <div style={{ marginTop: "15px" }} className="wrap-input100 validate-input alert-validate" data-validate="Mật khẩu không được trống">
+                            <div style={{ marginTop: "15px" }} className="wrap-input100 validate-input" data-validate="Mật khẩu không được trống">
                                 <input className="input100 input_custom_auth" type="password" name="pass" placeholder="Mật khẩu" ref={inputPassUp} />
                                 <span className="focus-input100"></span>
                                 <span className="symbol-input100">
                                     <i className="fa fa-lock" aria-hidden="true"></i>
                                 </span>
                             </div>
-                            <div style={{ marginTop: "15px" }} className="wrap-input100 validate-input alert-validate" data-validate="Mật khẩu không được trống">
+                            <div style={{ marginTop: "15px" }} className="wrap-input100 validate-input" data-validate="Mật khẩu không được trống">
                                 <input className="input100 input_custom_auth" type="password" name="pass" placeholder="Nhập lại mật khẩu" ref={inputRepass} />
                                 <span className="focus-input100"></span>
                                 <span className="symbol-input100">
