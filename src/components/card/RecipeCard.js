@@ -1,10 +1,27 @@
 import axios from "axios";
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 
-const RecipeCard = ({ item, image, reload, recipe, name }) => {
+const RecipeCard = ({ item, image, recipe, name }) => {
   const user = JSON.parse(localStorage.getItem("user"));
   const recipeId = recipe?._id;
+
+  const handleAddFavorite = async () => {
+    try{
+      await axios.post(
+        `/user/c_m/${item._id}`,
+        {},
+        {
+          headers: {
+            authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+    }
+    catch(err){
+      console.log(err);
+    }
+  }
 
   return (
     <div style={{ margin: "5px 0" }} className="product-item">
@@ -12,9 +29,8 @@ const RecipeCard = ({ item, image, reload, recipe, name }) => {
         <Link to={`/recipe/${recipeId}`}>
           <img
             style={{
-              minHeight: "350px",
+              minHeight: "200px",
               objectFit: "cover",
-              maxHeight: "350px",
             }}
             className="img-fluid w-100"
             src={image}
@@ -34,8 +50,7 @@ const RecipeCard = ({ item, image, reload, recipe, name }) => {
           style={{ fontSize: "15px", fontStyle: "italic" }}
           className="text-secondary me-2 d-block"
         >
-          {/* by {item?.users?.[0].name} */}
-          by Someone
+          by {item?.users?.[0].name}
         </span>
 
         <span className="text-secondary me-1">
@@ -47,7 +62,7 @@ const RecipeCard = ({ item, image, reload, recipe, name }) => {
             <Link
               style={{ textDecoration: "none" }}
               className="text-body"
-              to="/recipe/id"
+              to={`/recipe/${item?._id}`}
             >
               <i className="fa fa-eye text-primary me-2"></i>View detail
             </Link>
@@ -56,18 +71,7 @@ const RecipeCard = ({ item, image, reload, recipe, name }) => {
             <div
               style={{ textDecoration: "none", cursor: "pointer" }}
               className="text-body"
-              onClick={async () => {
-                await axios.post(
-                  `/user/c_m/${item._id}`,
-                  {},
-                  {
-                    headers: {
-                      authorization: `Bearer ${localStorage.getItem("token")}`,
-                    },
-                  }
-                );
-                reload();
-              }}
+              onClick={handleAddFavorite}
             >
               <i className="fa fa-heart text-primary me-2"></i>
               {item?.favorites?.find((item) => item === user._id)

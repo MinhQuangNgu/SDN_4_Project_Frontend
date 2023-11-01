@@ -75,7 +75,7 @@ const ProfileCard = ({ image, item, reload }) => {
                           reload();
                         }}
                       >
-                        {item?.followers?.find((item) => item === user._id)
+                        {item?.followers?.find((item) => item === user?._id)
                           ? "Bỏ theo dõi"
                           : "Theo dõi"}
                       </button>

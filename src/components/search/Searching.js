@@ -190,12 +190,12 @@ const Searching = () => {
                   data-wow-delay="0.1s"
                   key={recipe._id}
                 >
-                  <Link to={`/recipe/${recipe.slug}`}>
+                  <Link style={{ textDecoration: "none" }} to={`/recipe/${recipe?._id}`}>
                     <RecipeCard
                       name={recipe.name}
                       image={recipe.tags.find((tag) => tag.k === "image").v}
                       owner={recipe.owner}
-                      recipe={recipe}
+                      item={recipe}
                     />
                   </Link>
                 </div>

@@ -353,22 +353,25 @@ const Profile = () => {
                                         </div>
                                     </div>
                                 </div>
-                                {type === '' ?  
-                                <div className='row'>
-                                    {user?.ownerRecipes?.map(item =>
-                                        <div key={item?._id + "ownRecipe"} style={{ marginBottom: "20px" }} className="col-xl-4 col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                                            <OwnRecipeCard item={item} user={user}/>
-                                        </div>
-                                    )}
-                                </div> :
+                                {type === '' ?
+                                    <div className='row'>
+                                        {user?.ownerRecipes?.map(item =>
+                                            <div key={item?._id + "ownRecipe"} style={{ marginBottom: "20px" }} className="col-xl-4 col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                                                <OwnRecipeCard item={item} user={user} />
+                                            </div>
+                                        )}
+                                    </div> :
                                     type === "love" ? <div className='row'>
-                                        {user?.favoriteRecipes?.map(item=>{
+                                        {user?.favoriteRecipes?.map(item => {
                                             const img = item.tags?.find((el) => el.k === "image");
-                                            return  <RecipeCard item={item} image={img?.v} reload={()=> setReload(pre => !pre)}/>
-                                           
+                                            return <div key={item?._id + "ownRecipe"} style={{ marginBottom: "20px" }} className="col-xl-4 col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                                                <RecipeCard item={item} image={img?.v} reload={() => setReload(pre => !pre)} />
+                                            </div>
+
+
                                         })}
-                                       
-                                    
+
+
                                     </div> : <div className='row'>
                                         {user?.followings?.map(item =>
                                             <div key={item?._id + "fowllowing"} style={{ marginBottom: "20px" }} className="col-xl-6 col-lg-6 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
