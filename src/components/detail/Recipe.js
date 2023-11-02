@@ -20,6 +20,10 @@ const Recipe = () => {
   const [user, setUser] = useState({});
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
+
+  const [editedCommentContent, setEditedCommentContent] = useState("");
+  const [editingCommentId, setEditingCommentId] = useState(null);
+
   const natigate = useNavigate();
   useEffect(() => {
     const loadUser = localStorage.getItem("user");
@@ -69,11 +73,31 @@ const Recipe = () => {
         console.error(err);
       });
   }, [slug]);
+
   useEffect(() => {
     socket.on("commentAdded", (newComment) => {
       setComments((prevComments) => [...prevComments, newComment]);
     });
   }, []);
+
+  useEffect(() => {
+    socket.on("commentDeleted", (deletedCommentId) => {
+      setComments((prevComments) =>
+        prevComments.filter((comment) => comment._id !== deletedCommentId)
+      );
+    });
+  }, []);
+
+  useEffect(() => {
+    socket.on("commentUpdated", (updatedComment) => {
+      setComments((prevComments) =>
+        prevComments.map((comment) =>
+          comment._id === updatedComment._id ? updatedComment : comment
+        )
+      );
+    });
+  }, []);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -96,7 +120,9 @@ const Recipe = () => {
     const newCommentObject = {
       content: comment,
       recipeId: recipe._id,
+      parentId: null,
     };
+
     try {
       const response = await axios.post(`/comment`, newCommentObject, {
         headers: {
@@ -107,6 +133,8 @@ const Recipe = () => {
       console.log("Comment posted successfully", response);
 
       setComments([...comments, newCommentObject]);
+
+      setComments([...comments, response.data.data]);
 
       setComment("");
     } catch (error) {
@@ -131,6 +159,58 @@ const Recipe = () => {
       );
     }
     return starIcons;
+  };
+
+  const handleEditComment = async (commentId, updatedContent) => {
+    const token = localStorage.getItem("token");
+
+    try {
+      const response = await axios.put(
+        `/comment/${commentId}`,
+        { content: updatedContent },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        setEditingCommentId(null);
+        console.log("Comment edited successfully");
+      }
+    } catch (error) {
+      console.error("Error editing comment", error);
+    }
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    const token = localStorage.getItem("token");
+
+    if (!commentId || commentId === "undefined") {
+      console.log("Invalid commentId:", commentId);
+      return;
+    }
+
+    try {
+      const response = await axios.delete(`/comment/${commentId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.status === 200) {
+        const updatedComments = comments.filter(
+          (comment) => comment._id !== commentId
+        );
+
+        setComments(updatedComments);
+
+        console.log("Comment deleted successfully");
+      }
+    } catch (error) {
+      console.error("Error deleting comment", error);
+    }
   };
 
   return (
@@ -389,27 +469,90 @@ const Recipe = () => {
                       </div>
                       <br />
                       {/*phần render bình luận*/}
-                      {comments.map((comment) => (
-                        <div key={comment._id} className="card mt-4">
-                          <div className="card-body">
-                            <div className="d-flex flex-start align-items-center">
-                              <img
-                                className="rounded-circle shadow-1-strong me-3"
-                                src= {user?.tags?.image || "https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(19).webp"}
-                                alt="avatar"
-                                width="60"
-                                height="60"
-                              />
-                              <div>
-                                <h6 className="fw-bold text-primary mb-1">
-                                  {user?.name}
-                                </h6>
+                      {comments &&
+                        comments.map((comment) => (
+                          <div key={comment._id} className="card mt-4">
+                            <div className="card-body">
+                              <div className="d-flex align-items-center justify-content-between">
+                                <div className="d-flex flex-start align-items-center  ">
+                                  <img
+                                    className="rounded-circle shadow-1-strong me-3"
+                                    src={
+                                      user?.tags?.image ||
+                                      "https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(19).webp"
+                                    }
+                                    alt="avatar"
+                                    width="60"
+                                    height="60"
+                                  />
+                                  <div>
+                                    <h6 className="fw-bold text-primary mb-1">
+                                      {user?.name}
+                                    </h6>
+                                  </div>
+                                </div>
+                                <div>
+                                  {editingCommentId === comment._id ? ( 
+                                    <>
+                                      <button
+                                        className="btn btn-primary btn-sm"
+                                        onClick={() =>
+                                          handleEditComment(
+                                            comment._id,
+                                            editedCommentContent
+                                          )
+                                        }
+                                      >
+                                        Save
+                                      </button>
+                                      <button
+                                        className="btn btn-outline-primary btn-sm"
+                                        onClick={() =>
+                                          setEditingCommentId(null)
+                                        }
+                                      >
+                                        Cancel
+                                      </button>
+                                    </>
+                                  ) : (
+                                    <button
+                                      className="btn btn-danger btn-sm"
+                                      onClick={() =>
+                                        handleDeleteComment(comment._id)
+                                      }
+                                    >
+                                      Delete
+                                    </button>
+                                  )}
+                                </div>
                               </div>
+                              <p className="mt-3 mb-4 pb-2">
+                                {editingCommentId === comment._id ? (
+                                  <textarea
+                                    class="form-control"
+                                    value={editedCommentContent}
+                                    onChange={(e) =>
+                                      setEditedCommentContent(e.target.value)
+                                    }
+                                  ></textarea>
+                                ) : (
+                                  comment.content
+                                )}
+                              </p>
+                              {editingCommentId !== comment._id && ( 
+                                <button
+                                  className="btn btn-primary btn-sm"
+                                  onClick={() => {
+                                    setEditingCommentId(comment._id);
+                                    setEditedCommentContent(comment.content);
+                                  }}
+                                >
+                                  Edit
+                                </button>
+                              )}
                             </div>
-                            <p className="mt-3 mb-4 pb-2">{comment.content}</p>
                           </div>
-                        </div>
-                      ))}
+                        ))}
 
                       {/* <div className="small d-flex justify-content-start">
                         <div
