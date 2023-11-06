@@ -99,6 +99,20 @@ const Recipe = () => {
   }, []);
 
   useEffect(() => {
+    socket.on("commentReported", (reportedComment) => {
+      setComments((prevComments) => {
+        return prevComments.map((comment) => {
+          if (comment._id === reportedComment._id) {
+            // update reported field
+            return { ...comment, reported: true };
+          }
+          return comment;
+        });
+      });
+    });
+  }, []);
+
+  useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
   const [defaultStar, setDefaultStar] = useState(5);
@@ -210,6 +224,28 @@ const Recipe = () => {
       }
     } catch (error) {
       console.error("Error deleting comment", error);
+    }
+  };
+
+  const handleReportComment = async (commentId) => {
+    const token = localStorage.getItem("token");
+
+    try {
+      const response = await axios.post(
+        `/comment/${commentId}/report`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        console.log("Comment reported successfully");
+      }
+    } catch (error) {
+      console.error("Error reporting comment", error);
     }
   };
 
@@ -469,90 +505,122 @@ const Recipe = () => {
                       </div>
                       <br />
                       {/*phần render bình luận*/}
-                      {comments &&
-                        comments.map((comment) => (
-                          <div key={comment._id} className="card mt-4">
-                            <div className="card-body">
-                              <div className="d-flex align-items-center justify-content-between">
-                                <div className="d-flex flex-start align-items-center  ">
-                                  <img
-                                    className="rounded-circle shadow-1-strong me-3"
-                                    src={
-                                      user?.tags?.image ||
-                                      "https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(19).webp"
-                                    }
-                                    alt="avatar"
-                                    width="60"
-                                    height="60"
-                                  />
-                                  <div>
-                                    <h6 className="fw-bold text-primary mb-1">
-                                      {user?.name}
-                                    </h6>
+                      <div>
+                        {comments &&
+                          comments.map((comment) => {
+                            if (comment.reported) {
+                              // Nếu có, render ra thông báo
+                              return (
+                                <div
+                                  className="reported-comment"
+                                  key={comment._id}
+                                >
+                                  <h5>
+                                    This comment has been reported and hidden
+                                  </h5>
+                                </div>
+                              );
+                            } else {
+                              return (
+                                <div key={comment._id} className="card mt-4">
+                                  <div className="card-body">
+                                    <div className="d-flex align-items-center justify-content-between">
+                                      <div className="d-flex flex-start align-items-center">
+                                        <img
+                                          className="rounded-circle shadow-1-strong me-3"
+                                          src={
+                                            user?.tags?.image ||
+                                            "https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(19).webp"
+                                          }
+                                          alt="avatar"
+                                          width="60"
+                                          height="60"
+                                        />
+                                        <div>
+                                          <h6 className="fw-bold text-primary mb-1">
+                                            {user?.name}
+                                          </h6>
+                                        </div>
+                                      </div>
+                                      <div>
+                                        {editingCommentId === comment._id ? (
+                                          <>
+                                            <button
+                                              className="btn btn-primary btn-sm me-2"
+                                              onClick={() =>
+                                                handleEditComment(
+                                                  comment._id,
+                                                  editedCommentContent
+                                                )
+                                              }
+                                            >
+                                              Save
+                                            </button>
+                                            <button
+                                              className="btn btn-outline-primary btn-sm me-2"
+                                              onClick={() =>
+                                                setEditingCommentId(null)
+                                              }
+                                            >
+                                              Cancel
+                                            </button>
+                                          </>
+                                        ) : (
+                                          <div className="d-flex">
+                                            <button
+                                              className="btn btn-danger btn-sm me-2"
+                                              onClick={() =>
+                                                handleDeleteComment(comment._id)
+                                              }
+                                            >
+                                              Delete
+                                            </button>
+                                            <button
+                                              className="btn btn-warning btn-sm me-2"
+                                              onClick={() =>
+                                                handleReportComment(comment._id)
+                                              }
+                                            >
+                                              Report
+                                            </button>
+                                            <button
+                                              className="btn btn-info btn-sm"
+                                              onClick={() => {
+                                                setEditingCommentId(
+                                                  comment._id
+                                                );
+                                                setEditedCommentContent(
+                                                  comment.content
+                                                );
+                                              }}
+                                            >
+                                              Edit
+                                            </button>
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                    <p className="mt-3 mb-4 pb-2">
+                                      {editingCommentId === comment._id ? (
+                                        <textarea
+                                          className="form-control"
+                                          value={editedCommentContent}
+                                          onChange={(e) =>
+                                            setEditedCommentContent(
+                                              e.target.value
+                                            )
+                                          }
+                                        ></textarea>
+                                      ) : (
+                                        comment.content
+                                      )}
+                                    </p>
                                   </div>
                                 </div>
-                                <div>
-                                  {editingCommentId === comment._id ? ( 
-                                    <>
-                                      <button
-                                        className="btn btn-primary btn-sm"
-                                        onClick={() =>
-                                          handleEditComment(
-                                            comment._id,
-                                            editedCommentContent
-                                          )
-                                        }
-                                      >
-                                        Save
-                                      </button>
-                                      <button
-                                        className="btn btn-outline-primary btn-sm"
-                                        onClick={() =>
-                                          setEditingCommentId(null)
-                                        }
-                                      >
-                                        Cancel
-                                      </button>
-                                    </>
-                                  ) : (
-                                    <button
-                                      className="btn btn-danger btn-sm"
-                                      onClick={() =>
-                                        handleDeleteComment(comment._id)
-                                      }
-                                    >
-                                      Delete
-                                    </button>
-                                  )}
-                                </div>
-                              </div>
-                              <p className="mt-3 mb-4 pb-2">
-                                {editingCommentId === comment._id ? (
-                                  <textarea
-                                    class="form-control"
-                                    value={editedCommentContent}
-                                    onChange={(e) =>
-                                      setEditedCommentContent(e.target.value)
-                                    }
-                                  ></textarea>
-                                ) : (
-                                  comment.content
-                                )}
-                              </p>
-                              {editingCommentId !== comment._id && ( 
-                                <button
-                                  className="btn btn-primary btn-sm"
-                                  onClick={() => {
-                                    setEditingCommentId(comment._id);
-                                    setEditedCommentContent(comment.content);
-                                  }}
-                                >
-                                  Edit
-                                </button>
-                              )}
-                            </div>
-                          </div>
-                        ))}
+                              );
+                            }
+                          })}
+                      </div>
 
                       {/* <div className="small d-flex justify-content-start">
                         <div
