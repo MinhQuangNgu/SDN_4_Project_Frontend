@@ -319,12 +319,17 @@ const Recipe = () => {
                 ) : (
                   <div className="recipe-owner-btn">
                     <button
+                    style={{width:"100px"}}
                       onClick={() => {
+                       if(localStorage.getItem("token")){
                         natigate(`/${recipe?.owner?._id}/profile`);
+                       }else{
+                        natigate(`/login`);
+                       }
                       }}
                       className="btn btn-primary"
                     >
-                      Theo dõi
+                      {localStorage.getItem("token") ? "Theo dõi" : "Đăng nhập"}
                     </button>
                   </div>
                 )}
@@ -417,38 +422,6 @@ const Recipe = () => {
                             </label>
                           </div>
                           <div className="form-outline">
-                            <textarea
-                              placeholder="What is your view?"
-                              className="form-control"
-                              id="textAreaExample"
-                              rows="4"
-                            ></textarea>
-                          </div>
-                          <div className="d-flex justify-content-between mt-3">
-                            <div className="icons_container">
-                              {/* <div onClick={() => {
-                                                                setShowICons(!showIcons);
-                                                            }}>
-                                                            🙂
-                                                            </div>
-                                                            {showIcons && <div className='icons_picker'>
-                                                            <Picker
-                                                            data={data}
-                                                            onEmojiSelect={(e) => {
-                                                                // const content = contentRef.current;
-                                                                // if (!content) {
-                                                                //     return;
-                                                                // }
-                                                                // content.innerHTML = comment + e?.native;
-                                                                // setComment(content.innerHTML);
-                                                            }}
-                                                        />
-                                                            </div>} */}
-                            </div>
-                            <button type="button" className="btn btn-primary">
-                              Gửi{" "}
-                              <i className="fas fa-long-arrow-alt-right ms-1"></i>
-                            </button>
                           </div>
                         </div>
                       </div>

@@ -84,9 +84,14 @@ const Header = () => {
                         <p><i>Name: {user?.name}</i></p>
                       </div>
                       <div onClick={() => {
-                        navigate(`/${user?._id}/profile`)
+                        if(user?.role == "admin"){
+                          navigate(`/admin/manager/dashboard`)
+                        }
+                        else{
+                          navigate(`/${user?._id}/profile`)
+                        }
                       }} className='header_user_n'>
-                        <p>Profile</p>
+                        <p>{user?.role == "admin" ? "Management" : "Profile"}</p>
                       </div>
                       <div onClick={handleLogout} className='header_user_n'>
                         <p>
@@ -96,8 +101,6 @@ const Header = () => {
                     </div>}
                 </div>
               }
-
-
             </div>
           </div>
         </nav >

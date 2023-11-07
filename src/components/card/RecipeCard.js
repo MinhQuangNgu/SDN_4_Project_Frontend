@@ -1,13 +1,20 @@
 import axios from "axios";
 import React, { useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const RecipeCard = ({ item, image, recipe, name,reload }) => {
   const user = JSON.parse(localStorage.getItem("user"));
+
+  const navigate = useNavigate();
   const recipeId = recipe?._id;
 
 
   const handleAddFavorite = async () => {
+    const token = localStorage.getItem("user")
+    if(!token){
+      navigate('/login');
+      return;
+    }
     try{
       await axios.post(
         `/user/c_m/${item._id}`,
@@ -78,7 +85,7 @@ const RecipeCard = ({ item, image, recipe, name,reload }) => {
               onClick={handleAddFavorite}
             >
               <i className="fa fa-heart text-primary me-2"></i>
-              {item?.favorites?.find((item) => item === user._id)
+              {item?.favorites?.find((item) => item === user?._id)
                 ? "Unfavorite"
                 : "Favorite"}
             </div>

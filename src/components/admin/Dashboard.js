@@ -12,6 +12,7 @@ import axios from 'axios';
 import { Bar } from "react-chartjs-2";
 import Swal from 'sweetalert2'
 import moment from 'moment'
+import {useNavigate} from 'react-router-dom'
 ChartJS.register(
     CategoryScale,
     LinearScale,
@@ -23,6 +24,7 @@ ChartJS.register(
 const Dashboard = () => {
 
     const [dashboard, setDashboard] = useState(null)
+    const navigate = useNavigate();
 
     let date = 31;
     let labels = Array(date)
@@ -40,6 +42,17 @@ const Dashboard = () => {
             },
         },
     };
+    useEffect(() => {
+        const user = localStorage.getItem("user");
+        if(user){
+            if(JSON.parse(user)?.role != "admin"){
+                navigate('/');
+            }
+        }
+        else{
+            navigate('/');
+        }
+    },[]);
 
     useEffect(() => {
         const token = localStorage.getItem("token");

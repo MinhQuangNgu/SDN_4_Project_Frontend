@@ -61,6 +61,11 @@ const ProfileCard = ({ image, item, reload }) => {
                         type="button"
                         class="btn btn-primary flex-grow-1"
                         onClick={async () => {
+                          if (!localStorage.getItem(
+                            "token"
+                          )) {
+                            return;
+                          }
                           await axios.post(
                             `/user/f_m/${item?._id}`,
                             {},

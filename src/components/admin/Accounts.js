@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react'
 import AccountCard from '../card/AccountCard'
 import axios from 'axios';
 import Swal from 'sweetalert2'
+import { useNavigate } from 'react-router-dom';
 const Accounts = () => {
 
     const [users,setUsers] = useState([]);
 
     const [reload,setReload] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -28,6 +30,18 @@ const Accounts = () => {
                 })
             })
     }, [reload]);
+
+    useEffect(() => {
+        const user = localStorage.getItem("user");
+        if(user){
+            if(JSON.parse(user)?.role != "admin"){
+                navigate('/');
+            }
+        }
+        else{
+            navigate('/');
+        }
+    },[]);
     return (
         <div>
             <section className="ftco-section">
