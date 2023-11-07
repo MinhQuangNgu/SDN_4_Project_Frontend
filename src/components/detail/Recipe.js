@@ -320,7 +320,7 @@ const Recipe = () => {
                   <div className="recipe-owner-btn">
                     <button
                       onClick={() => {
-                        natigate(`/${user?._id}/profile`);
+                        natigate(`/${recipe?.owner?._id}/profile`);
                       }}
                       className="btn btn-primary"
                     >
