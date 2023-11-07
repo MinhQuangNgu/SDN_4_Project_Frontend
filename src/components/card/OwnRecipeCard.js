@@ -4,38 +4,45 @@ import axios from 'axios';
 import { getOwnRecipe, getRecipe } from '../recipe/recipeService';
 
 const OwnRecipeCard = ({ item, user }) => {
-    const [active,setActive] = useState(true);
+    const [active, setActive] = useState(true);
     useEffect(() => {
         getOwnRecipe().then(data => { setDataRecipe(data.data.recipe) })
     }, [])
 
+
     const [dataRecipe, setDataRecipe] = useState([]);
-    
+
     const handleChangeStatus = (id) => {
         const token = localStorage.getItem('token');
-
-        axios.post(`/recipe/changestatus/${id}`,null,{
-            headers: {
-                authorization: `Bearer ${token}`
-            }
-        });
-        setActive(!active);
+        const confirmChangStatus = window.confirm('Đổi trạng thái của món ăn này?');
+        if (confirmChangStatus) {
+            axios.post(`/recipe/changestatus/${id}`, null, {
+                headers: {
+                    authorization: `Bearer ${token}`
+                }
+            });
+            setActive(!active);
+            window.location.reload()
+        }
     }
     const handleDelete = (id) => {
         const token = localStorage.getItem('token');
-
-        axios.delete(`/recipe/${id}`, {
-            headers: {
-                authorization: `Bearer ${token}`
-            }
-        }).then(() => {
-            // Xóa thành công, cập nhật lại state dataRecipe
-            setDataRecipe(prevData => prevData.filter(data => data._id !== id));
-        })
-            .catch(error => {
-                // Xử lý lỗi khi xóa không thành công
-                console.log(error);
-            });
+        const confirmDelete = window.confirm('Bạn có muốn xóa product này không?');
+        if (confirmDelete) {
+            axios.delete(`/recipe/${id}`, {
+                headers: {
+                    authorization: `Bearer ${token}`
+                }
+            }).then(() => {
+                // Xóa thành công, cập nhật lại state dataRecipe
+                setDataRecipe(prevData => prevData.filter(data => data._id !== id));
+                window.location.reload()
+            })
+                .catch(error => {
+                    // Xử lý lỗi khi xóa không thành công
+                    console.log(error);
+                });
+        }
     }
     //
     const [tags, setTags] = useState({});
