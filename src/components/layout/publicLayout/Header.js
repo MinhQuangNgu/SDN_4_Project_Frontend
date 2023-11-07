@@ -4,7 +4,7 @@ import './style.scss'
 import Swal from 'sweetalert2';
 const Header = () => {
   const [wasLogin, setWasLogin] = useState(true);
-  const [user,setUser] = useState(null);
+  const [user, setUser] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -12,7 +12,7 @@ const Header = () => {
     setIsOpen(!isOpen);
   };
 
-  const handleLogout = () =>{
+  const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     setWasLogin(false);
@@ -56,8 +56,11 @@ const Header = () => {
           </button>
           <div className="collapse navbar-collapse" id="navbarCollapse">
             <div className="navbar-nav ms-auto p-4 p-lg-0">
-              <Link to='/' className="nav-item nav-link active d-lg-none">Home</Link>
-              <Link className="nav-item nav-link d-lg-none">About Us</Link>
+              {!wasLogin && <Link to='/login' className="nav-item nav-link active d-lg-none">Login</Link>}
+              {wasLogin && <Link to={`/${user?._id}/profile`} className="nav-item nav-link active d-lg-none">Profile</Link>}
+              {wasLogin && <div onClick={handleLogout} style={{cursor:"pointer"}}  className='nav-item nav-link active d-lg-none'>
+              Đăng xuất
+              </div>}
             </div>
             <div className="d-none d-lg-flex ms-2">
               <Link style={{ textDecoration: "none", color: "black" }} className="btn-sm-square bg-white rounded-circle ms-3" to='/'>
@@ -74,31 +77,31 @@ const Header = () => {
                   <small className="text-body">Đăng nhập</small>
                 </Link> :
                 <div
-                  style={{ textDecoration: 'none', color: 'black',cursor:"pointer" }}
+                  style={{ textDecoration: 'none', color: 'black', cursor: "pointer" }}
                   className="btn-sm-square bg-white rounded-circle ms-3 position-relative"
                   onClick={toggleMenu}
                 >
                   <small className="fa fa-user text-body"></small>
                   {isOpen && <div className='header_user'>
-                      <div className='header_user_n'>
-                        <p><i>Name: {user?.name}</i></p>
-                      </div>
-                      <div onClick={() => {
-                        if(user?.role == "admin"){
-                          navigate(`/admin/manager/dashboard`)
-                        }
-                        else{
-                          navigate(`/${user?._id}/profile`)
-                        }
-                      }} className='header_user_n'>
-                        <p>{user?.role == "admin" ? "Management" : "Profile"}</p>
-                      </div>
-                      <div onClick={handleLogout} className='header_user_n'>
-                        <p>
-                            Đăng xuất
-                        </p>
-                      </div>
-                    </div>}
+                    <div className='header_user_n'>
+                      <p><i>Name: {user?.name}</i></p>
+                    </div>
+                    <div onClick={() => {
+                      if (user?.role == "admin") {
+                        navigate(`/admin/manager/dashboard`)
+                      }
+                      else {
+                        navigate(`/${user?._id}/profile`)
+                      }
+                    }} className='header_user_n'>
+                      <p>{user?.role == "admin" ? "Management" : "Profile"}</p>
+                    </div>
+                    <div onClick={handleLogout} className='header_user_n'>
+                      <p>
+                        Đăng xuất
+                      </p>
+                    </div>
+                  </div>}
                 </div>
               }
             </div>
