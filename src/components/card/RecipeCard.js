@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 
-const RecipeCard = ({ item, image, recipe, name }) => {
+const RecipeCard = ({ item, image, recipe, name,reload }) => {
   const user = JSON.parse(localStorage.getItem("user"));
   const recipeId = recipe?._id;
 
@@ -17,6 +17,9 @@ const RecipeCard = ({ item, image, recipe, name }) => {
           },
         }
       );
+      if(reload){
+        reload();
+      }
     }
     catch(err){
       console.log(err);
@@ -29,7 +32,7 @@ const RecipeCard = ({ item, image, recipe, name }) => {
         <Link to={`/recipe/${recipeId}`}>
           <img
             style={{
-              minHeight: "200px",
+              height: "200px",
               objectFit: "cover",
             }}
             className="img-fluid w-100"

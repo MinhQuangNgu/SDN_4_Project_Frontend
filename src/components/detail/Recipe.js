@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./style.scss";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
@@ -23,6 +23,8 @@ const Recipe = () => {
 
   const [editedCommentContent, setEditedCommentContent] = useState("");
   const [editingCommentId, setEditingCommentId] = useState(null);
+
+  const recipeContentRef = useRef();
 
   const natigate = useNavigate();
   useEffect(() => {
@@ -55,6 +57,7 @@ const Recipe = () => {
             tags: ownerTag,
           },
         });
+        
       })
       .catch((err) => {
         console.log(err);
@@ -87,6 +90,12 @@ const Recipe = () => {
       );
     });
   }, []);
+
+  useEffect(() => {
+    if(recipe){
+      recipeContentRef.current.innerHTML = recipe?.recipes
+    }
+  },[recipe]);
 
   useEffect(() => {
     socket.on("commentUpdated", (updatedComment) => {
@@ -324,7 +333,7 @@ const Recipe = () => {
           </div>
         </div>
         <div className="recipe_content">
-          <div className="col-10">{recipe?.recipes}</div>
+          <div ref={recipeContentRef} className="col-10"></div>
         </div>
         <div className="recipe-comments-rate">
           <section>

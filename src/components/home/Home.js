@@ -96,7 +96,7 @@ const Home = () => {
           <div class="tab-content">
             <div class="tab-pane fade show p-0 active">
               <div class="row g-4">
-              {dataFavorite.map((item) => {
+                {dataFavorite.map((item) => {
                   const img = item.tags?.find((el) => el.k === "image");
                   return (
                     <div
@@ -114,9 +114,9 @@ const Home = () => {
                     </div>
                   );
                 })}
-             
+
                 <div class="col-12 text-center">
-                  <Link class="btn btn-primary rounded-pill py-3 px-5"  to="/recipe/search?type=favorite">Hiển thị thêm</Link>
+                  <Link class="btn btn-primary rounded-pill py-3 px-5" to="/recipe/search?type=favorite">Hiển thị thêm</Link>
                 </div>
               </div>
             </div>
@@ -135,7 +135,7 @@ const Home = () => {
           <div class="tab-content">
             <div class="tab-pane fade show p-0 active">
               <div class="row g-4">
-              {dataNew.map((item) => {
+                {dataNew.map((item) => {
                   const img = item.tags?.find((el) => el.k === "image");
                   return (
                     <div
@@ -153,9 +153,9 @@ const Home = () => {
                     </div>
                   );
                 })}
-              
+
                 <div class="col-12 text-center">
-                  <Link class="btn btn-primary rounded-pill py-3 px-5"  to="/recipe/search?type=new">Hiển thị thêm</Link>
+                  <Link class="btn btn-primary rounded-pill py-3 px-5" to="/recipe/search?type=new">Hiển thị thêm</Link>
                 </div>
               </div>
             </div>
@@ -182,8 +182,8 @@ const Home = () => {
               disableOnInteraction: false,
             }}
           >
-             {dataChief.map((item) => {
-              if (item?._id === user?._id){
+            {dataChief.map((item) => {
+              if (item?._id === user?._id) {
                 return
               }
               console.log(item)
