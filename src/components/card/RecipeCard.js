@@ -6,6 +6,7 @@ const RecipeCard = ({ item, image, recipe, name,reload }) => {
   const user = JSON.parse(localStorage.getItem("user"));
   const recipeId = recipe?._id;
 
+
   const handleAddFavorite = async () => {
     try{
       await axios.post(
@@ -29,14 +30,14 @@ const RecipeCard = ({ item, image, recipe, name,reload }) => {
   return (
     <div style={{ margin: "5px 0" }} className="product-item">
       <div className="position-relative bg-light overflow-hidden">
-        <Link to={`/recipe/${recipeId}`}>
+        <Link to={`/recipe/${item?._id}`}>
           <img
             style={{
               height: "200px",
               objectFit: "cover",
             }}
             className="img-fluid w-100"
-            src={image}
+            src={image || "https://res.cloudinary.com/sttruyen/image/upload/v1694421667/ea4r3uwdjmkobr1mpmkg.jpg"}
             alt={item?.name}
           />
         </Link>

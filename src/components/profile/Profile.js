@@ -371,7 +371,6 @@ const Profile = () => {
 
                                         })}
 
-
                                     </div> : <div className='row'>
                                         {user?.followings?.map(item =>
                                             <div key={item?._id + "fowllowing"} style={{ marginBottom: "20px" }} className="col-xl-6 col-lg-6 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
