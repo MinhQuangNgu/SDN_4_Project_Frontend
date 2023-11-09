@@ -382,7 +382,7 @@ const Profile = () => {
                                                                     <div style={{ height: "150px" }} className="card-body p-4">
                                                                         <div className="d-flex text-black">
                                                                             <div className="flex-shrink-0">
-                                                                                <img src={item?.tags?.image ? item?.tags?.image : "https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"}
+                                                                                <img src={item?.tags?.image ? item?.tags?.image : "https://res.cloudinary.com/sttruyen/image/upload/v1694421667/sggxexjxdyhpygdopgxe.jpg"}
                                                                                     alt="Generic placeholder image" className="img-fluid"
                                                                                     style={{ width: "100px", height: "80px", objectFit: "cover" }} />
                                                                             </div>

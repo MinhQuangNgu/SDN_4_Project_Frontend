@@ -194,7 +194,7 @@ const Home = () => {
                     reload={getTopChief}
                     image={
                       item.tags.find((el) => el.k === "image")?.v ||
-                      "https://www.cet.edu.vn/wp-content/uploads/2018/04/nghe-dau-bep-cet.jpg"
+                      "https://res.cloudinary.com/sttruyen/image/upload/v1694421667/sggxexjxdyhpygdopgxe.jpg"
                     }
                   />
                 </SwiperSlide>

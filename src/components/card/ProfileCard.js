@@ -18,7 +18,7 @@ const ProfileCard = ({ image, item, reload }) => {
             <div class="card" style={{ borderRadius: "15px" }}>
               <div style={{ height: "150px" }} class="card-body p-4">
                 <div class="d-flex text-black">
-                  <Link to="/minhquang/profile" class="flex-shrink-0">
+                  <Link to={`/${item?._id}/profile`} class="flex-shrink-0">
                     <img
                       src={image}
                       alt="Generic placeholder image"
@@ -36,7 +36,7 @@ const ProfileCard = ({ image, item, reload }) => {
                         textDecoration: "none",
                         color: "rgba(0,0,0,0.6)",
                       }}
-                      to="/minhquang/profile"
+                      to={`/${item?._id}/profile`}
                     >
                       <h5 class="mb-1">{item?.name}</h5>
                     </Link>
